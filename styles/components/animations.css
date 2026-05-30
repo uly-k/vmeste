@@ -1,0 +1,62 @@
+/* ===== АНИМАЦИЯ ДЛЯ ТЕКСТА ПО СТРОКАМ ===== */
+
+/* Базовое состояние для h2 */
+#abz2 {
+    opacity: 0;
+}
+
+/* Стили для строк */
+.text-line {
+    display: block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideInLine 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Анимация появления строки */
+@keyframes slideInLine {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Анимация для кнопки (дополнительно) */
+#yznat {
+    opacity: 0;
+    animation: fadeInButton 0.6s ease forwards;
+    animation-delay: 0.8s;
+}
+
+@keyframes fadeInButton {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Уменьшение движения для пользователей с vestibular disorders */
+@media (prefers-reduced-motion: reduce) {
+    .text-line {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+    
+    #abz2 {
+        opacity: 1;
+    }
+    
+    #yznat {
+        animation: none;
+        opacity: 1;
+    }
+}

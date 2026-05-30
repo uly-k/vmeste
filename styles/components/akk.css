@@ -1,0 +1,200 @@
+/* ===== БАЗОВЫЙ ЭЛЕМЕНТ АБОНЕМЕНТА ===== */
+.abonement-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px;
+  border-radius: 24px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center center;
+  cursor: pointer;
+  
+  /* Уникальные размеры для абонемента */
+  width: 792px;
+  height: 408px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* ===== МОДИФИКАТОРЫ ЦВЕТА ===== */
+.abonement-item--white {
+  background-color: var(--white);
+}
+
+.abonement-item--blue {
+  background-color: var(--blue);
+}
+
+.abonement-item--lightblue {
+  background-color: var(--light-blue);
+}
+
+.abonement-item--green {
+  background-color: var(--green);
+}
+
+/* ===== СТИЛИ ТЕКСТА ВНУТРИ ===== */
+.abonement-item__title,
+.abonement-item__description {
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ===== СОСТОЯНИЯ ===== */
+.abonement-item.active-card {
+  transform: translateY(-8px) rotate(0deg) !important;
+  filter: blur(0) !important;
+}
+
+.abonement-item.active-card .abonement-item__title,
+.abonement-item.active-card .abonement-item__description {
+  opacity: 1 !important;
+}
+
+/* ===== ИНДИВИДУАЛЬНЫЕ ТЕНИ ДЛЯ КАЖДОЙ КАРТОЧКИ ===== */
+.abonement-item:nth-child(1) {
+  box-shadow: 
+    3px 7px 17px 0 rgba(0, 0, 0, 0.2),
+    12px 28px 31px 0 rgba(0, 0, 0, 0.17),
+    27px 64px 41px 0 rgba(0, 0, 0, 0.1),
+    47px 113px 49px 0 rgba(0, 0, 0, 0.03),
+    74px 177px 54px 0 rgba(0, 0, 0, 0);
+}
+
+.abonement-item:nth-child(2) {
+  box-shadow: 
+    153px 105px 74px 0 rgba(0, 0, 0, 0.01),
+    85px 59px 62px 0 rgba(0, 0, 0, 0.05),
+    38px 26px 46px 0 rgba(0, 0, 0, 0.09),
+    9px 7px 25px 0 rgba(0, 0, 0, 0.1);
+}
+
+.abonement-item:nth-child(2) p,
+.abonement-item:nth-child(2) h2 {
+  color: white;
+}
+
+.abonement-item:nth-child(3) {
+  box-shadow: 
+    60px 42px 29px 0 rgba(0, 0, 0, 0.01),
+    34px 24px 25px 0 rgba(0, 0, 0, 0.05),
+    15px 11px 18px 0 rgba(0, 0, 0, 0.09),
+    4px 3px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.abonement-item:nth-child(4) {
+  box-shadow: 
+    58px 25px 25px 0 rgba(0, 0, 0, 0.01),
+    32px 14px 21px 0 rgba(0, 0, 0, 0.05),
+    14px 6px 16px 0 rgba(0, 0, 0, 0.09),
+    4px 2px 9px 0 rgba(0, 0, 0, 0.1);
+}
+
+.abonement-item:nth-child(5) {
+  box-shadow: 
+    42px 34px 22px 0 rgba(0, 0, 0, 0.01),
+    24px 19px 18px 0 rgba(0, 0, 0, 0.05),
+    10px 9px 14px 0 rgba(0, 0, 0, 0.09),
+    3px 2px 7px 0 rgba(0, 0, 0, 0.01);
+}
+
+.abonement-item:nth-child(5) p,
+.abonement-item:nth-child(5) h2 {
+  color: white;
+}
+
+.abonement-item:nth-child(6) {
+  box-shadow: 
+    44px 28px 21px 0 rgba(0, 0, 0, 0.01),
+    25px 16px 18px 0 rgba(0, 0, 0, 0.05),
+    11px 7px 13px 0 rgba(0, 0, 0, 0.09),
+    3px 2px 7px 0 rgba(0, 0, 0, 0.1);
+}
+
+.abonement-item:nth-child(7) {
+  box-shadow: 
+    27px 21px 14px 0 rgba(0, 0, 0, 0.01),
+    15px 12px 12px 0 rgba(0, 0, 0, 0.03),
+    7px 5px 9px 0 rgba(0, 0, 0, 0.04),
+    2px 1px 5px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ===== КОНТЕЙНЕР ДЛЯ СТЕКА ===== */
+.abonement-stack {
+  grid-column: 1 / -1;
+  position: relative;
+  min-height: 472px;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+/* Ноутбук (1608px) */
+@media (max-width: 1608px) {
+  .abonement-stack {
+    min-height: 388px;
+  }
+  
+  .abonement-item {
+    width: 560px;
+    height: 324px;
+  }
+  
+  
+}
+
+/* Планшет (1156px) */
+@media (max-width: 1156px) {
+  .abonement-stack {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    min-height: auto;
+    padding: 80px 12px;
+    margin: -80px -12px;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .abonement-stack::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .abonement-item {
+    position: relative;
+    left: auto !important;
+    top: auto;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    transform: none !important;
+    width: 670px;
+    height: 320px;
+  }
+  
+  .abonement-item.active-card {
+    transform: none !important;
+  }
+  
+  .abonement-item__title,
+  .abonement-item__description {
+    opacity: 1 !important;
+  }
+}
+
+/* Мобилка (756px) */
+@media (max-width: 756px) {
+  .abonement-stack {
+    padding: 100px 12px;
+    margin: -100px -12px;
+    gap: 12px;
+  }
+
+  .abonement-item {
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    padding: 20px;
+  }
+}

@@ -1,0 +1,29 @@
+h1, h2, h3, p {
+  font-family: var(--font-primary);
+  line-height: var(--lh-100);
+  font-weight: var(--font-weight);
+  margin: 0;
+}
+
+h1 { font-size: var(--h1); }
+h2 { font-size: var(--h2); }
+h3 { font-size: var(--h3); }
+
+p {
+  font-size: var(--body);
+}
+
+.dec {
+  font-family: var(--font-primary);
+  line-height: var(--lh-100);
+  font-weight: var(--font-weight);
+  margin: 0;
+  font-size: var(--dec);
+}
+
+.zone-label {
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  fill: black;
+  pointer-events: none; /* критично */
+}

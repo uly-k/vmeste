@@ -1,0 +1,17 @@
+/* =====================================================
+   shop.css — секция магазина
+   Зависимости: variables.css, grid.css, cards-shop.css
+   ===================================================== */
+
+#shop {
+  background-color: var(--light-blue);
+}
+
+.shop__title {
+  grid-column: 1 / -1;
+  font-family: var(--font-primary);
+  font-size: var(--h2);
+  font-weight: var(--font-weight);
+  line-height: var(--lh-100);
+  color: var(--black);
+}

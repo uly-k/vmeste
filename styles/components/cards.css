@@ -1,0 +1,168 @@
+/* ===== БАЗОВАЯ КАРТОЧКА ===== */
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px;
+  border-radius: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ===== МОДИФИКАТОРЫ ШИРИНЫ ===== */
+.card--wide {
+  grid-column: span 7;
+}
+
+.card--narrow {
+  grid-column: span 5;
+}
+
+.card--standart {
+  grid-column: span 6;
+}
+
+
+/* ===== МОДИФИКАТОРЫ ЦВЕТА ===== */
+.card--blue {
+  background-color: var(--light-blue);
+}
+
+.card--green {
+  background-color: var(--green);
+}
+
+.card--geo {
+  background-color: var(--light-blue);
+}
+
+.card--white {
+  background-color: var(--white);
+}
+
+/* ===== МОДИФИКАТОРЫ ВЫСОТЫ ===== */
+.card--tall {
+  height: 680px;
+}
+
+.card--mid {
+  height: 434px;
+}
+
+.card--medium {
+  height: 486px;
+}
+
+.card--short {
+  height: 280px;
+}
+
+/* ===== РАСШИРЕНИЕ ДЛЯ ФУТЕРА ===== */
+.footer__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px;
+  border-radius: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 384px;
+}
+
+.footer__card--narrow {
+  grid-column: span 5;
+}
+
+.footer__card--blue {
+  background-color: var(--light-blue);
+}
+
+.footer__card--green {
+  background-color: var(--green);
+}
+
+/* ===== НОУТБУК (1608px) ===== */
+@media (max-width: 1608px) {
+  .card--tall {
+    height: 480px;
+  }
+
+  .card--mid {
+    height: 300px;
+  }
+
+  .card--medium {
+    height: 300px;
+  }
+
+  .card--short {
+    height: 180px;
+  }
+}
+
+/* ===== ПЛАНШЕТ (1156px) ===== */
+@media (max-width: 1156px) {
+
+  .card--standart {
+    grid-column: span 3;
+  }
+
+  .card--wide {
+    grid-column: span 3;
+  }
+
+  .card--narrow {
+    grid-column: span 3;
+  }
+
+  .card--tall {
+    height: 380px;
+  }
+
+  .card--mid {
+    height: 300px;
+  }
+
+  .card--medium {
+    height: 300px;
+  }
+
+  .card--short {
+    height: 180px;
+  }
+}
+
+/* ===== МОБИЛКА (756px) ===== */
+@media (max-width: 756px) {
+  .card--wide {
+    grid-column: span 4;
+  }
+
+  .card--standart {
+    grid-column: span 4;
+  }
+
+  .card--narrow {
+    grid-column: span 4;
+  }
+
+  .card--tall {
+    height: 380px;
+  }
+
+  .card--mid {
+    height: 300px;
+  }
+
+  .card--medium {
+    height: 300px;
+  }
+
+  .card--short {
+    height: 180px;
+  }
+}
+
+
+
+

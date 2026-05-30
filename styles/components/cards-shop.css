@@ -1,0 +1,357 @@
+/* ===================================================
+   МАГАЗИН — КАРТОЧКИ ТОВАРОВ (shop card module)
+   Зависимости: variables.css, reset.css, grid.css
+   =================================================== */
+
+/* ── ТУЛБАР (поиск + фильтры) ── */
+.shop__toolbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  margin-bottom: var(--space-24);
+}
+
+.shop__search-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.shop__search {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  padding: 0 52px 0 24px;
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--black);
+  outline: none;
+  transition: box-shadow 0.15s;
+}
+
+.shop__search:focus {
+  box-shadow: 0 0 0 2px var(--blue);
+}
+
+.shop__search-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.shop__btn-toolbar {
+  height: 52px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--blue);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.shop__btn-toolbar:hover {
+  background: #daeeff;
+}
+
+.shop__btn-sort {
+  width: 52px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* ── ГРИД ТОВАРОВ ── */
+.shop__grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: var(--grid-gap);
+  margin-top: var(--space-8);
+}
+
+/* ── КАРТОЧКА ── */
+.shop-card {
+  grid-column: span 3;
+  background: var(--white);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* анимация появления */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.35s ease, transform 0.35s ease,
+              box-shadow 0.2s ease;
+}
+
+.shop-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.shop-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 119, 255, 0.10);
+}
+
+/* ── ФОТО ── */
+.shop-card__img-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f0eeeb;
+  flex-shrink: 0;
+}
+
+.shop-card__img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.shop-card:hover .shop-card__img-wrap img {
+  transform: scale(1.04);
+}
+
+/* ── ТЕЛО ── */
+.shop-card__body {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-16);
+  gap: var(--space-8);
+  flex: 1;
+  justify-content: space-between;
+}
+
+.shop-card__name {
+  font-family: var(--font-primary);
+  font-size: var(--h3);
+  font-weight: var(--font-weight);
+  line-height: var(--lh-100);
+  color: var(--black);
+}
+
+.shop-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shop-card__meta-label {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #aaa;
+  line-height: var(--lh-100);
+}
+
+.shop-card__meta-value {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #666;
+  line-height: var(--lh-100);
+}
+
+/* ── НИЖНЯЯ СТРОКА (размеры + кнопка) ── */
+.shop-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+}
+
+.shop-card__sizes {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.shop-card__size {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #bbb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.12s;
+}
+
+.shop-card__size:hover {
+  color: var(--black);
+}
+
+.shop-card__size.active {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* ── КНОПКА ДОБАВИТЬ ── */
+.shop-card__add {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--green);
+  color: var(--black);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.shop-card__add:hover {
+  background: #aadf3e;
+}
+
+.shop-card__add:active {
+  transform: scale(0.9);
+}
+
+/* ── ЦЕНА ── */
+.shop-card__price {
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  font-weight: 500;
+  color: var(--black);
+}
+
+/* ── СКЕЛЕТОН ── */
+.shop-card--skeleton .shop-card__img-wrap {
+  background: #e4e4e4;
+}
+
+.shop-card--skeleton .shop-card__body {
+  gap: var(--space-8);
+}
+
+.skel {
+  background: linear-gradient(90deg, #e8e8e8 25%, #f2f2f2 50%, #e8e8e8 75%);
+  background-size: 200% 100%;
+  animation: skel-shine 1.4s infinite;
+  border-radius: 6px;
+}
+
+@keyframes skel-shine {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── КНОПКА «загрузить ещё» ── */
+.shop__loadmore-wrapper {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.shop__loadmore {
+  background: none;
+  border: none;
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  color: var(--blue);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.shop__loadmore:hover  { opacity: 0.65; }
+.shop__loadmore:disabled { opacity: 0.35; cursor: default; }
+
+/* ── ПУСТЫЕ СОСТОЯНИЯ ── */
+.shop__state-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 64px 0;
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  color: #aaa;
+}
+
+/* ===================================================
+   АДАПТИВ
+   =================================================== */
+
+/* Планшет — 12 → 6 колонок, карточка span 3 = 2 в ряд */
+@media (max-width: 1156px) {
+  .shop-card {
+    grid-column: span 3;
+    border-radius: 20px;
+  }
+
+  .shop-card__body {
+    padding: var(--space-16) 12px 12px;
+  }
+
+  .shop-card__add {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .shop__loadmore-wrapper {
+    margin-top: var(--space-32);
+  }
+}
+
+/* Мобилка — 4 колонки, карточка span 2 = 2 в ряд */
+@media (max-width: 756px) {
+  .shop-card {
+    grid-column: span 2;
+    border-radius: 12px;
+  }
+
+  .shop-card__img-wrap {
+    aspect-ratio: 4 / 3;
+  }
+
+  .shop-card__body {
+    padding: var(--space-8);
+    gap: var(--space-4);
+  }
+
+  .shop-card__add {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .shop__toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-8);
+  }
+
+  .shop__search {
+    height: 44px;
+  }
+
+  .shop__btn-toolbar {
+    height: 44px;
+    padding: 0 16px;
+  }
+
+  .shop__loadmore-wrapper {
+    margin-top: var(--space-16);
+  }
+}

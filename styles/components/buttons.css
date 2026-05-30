@@ -1,0 +1,205 @@
+.btn {
+  font-family: var(--font-primary);
+  line-height: var(--lh-100);
+  font-weight: var(--font-weight);
+
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  transition: background 0.2s ease;
+  
+  text-decoration: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.btn--link {
+  background: none;
+  color: var(--blue);
+  font-size: var(--btn-secondary);
+  text-decoration: underline;
+ 
+
+}
+
+.btn--link:hover {
+  background: none;
+  color: var(--dark-blue);
+    
+}
+
+.btn--link:active {
+  background: none;
+  color: var(--black);
+    
+}
+
+
+
+.btn--linkzak {
+  background: none;
+  color: var(--blue);
+  font-size: var(--btn-secondary);
+  text-decoration: underline;
+   font-size: 14px;
+
+}
+
+.btn--linkzak:hover {
+  background: none;
+  color: red;
+    
+}
+
+.btn--linkzak:active {
+  background: none;
+  color: var(--black);
+    
+}
+
+/* ===== PRIMARY BUTTON ===== */
+.btn--primary {
+  background: var(--black);
+  color: var(--white);
+
+  font-size: var(--btn-primary);
+  padding: clamp(12px, 1.5vw, 22px) clamp(24px, 3vw, 60px);
+  min-height: clamp(44px, 4vw, 72px);
+  font-weight: 400;
+}
+
+/* Hover */
+.btn--primary:hover {
+  background: var(--blue);
+}
+
+/* Focus (WCAG) */
+.btn--primary:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+  background: var(--blue);
+}
+
+/* Active */
+.btn--primary:active {
+  background: var(--dark-blue);
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Disabled */
+.btn--primary:disabled,
+.btn--primary[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--black);
+}
+
+/* Visited */
+.btn--primary:visited {
+  color: var(--white);
+}
+
+/* ===== SECONDARY BUTTON ===== */
+.btn--secondary {
+  background: var(--black);
+  color: var(--white);
+
+  font-size: var(--btn-secondary);
+  padding: clamp(10px, 1vw, 16px) clamp(20px, 2.5vw, 40px);
+  min-height: clamp(44px, 3vw, 56px);
+}
+
+.btn--white{
+  background: var(--white);
+  color: var(--blue);
+
+  font-size: var(--btn-secondary);
+  padding: clamp(10px, 1vw, 16px) clamp(20px, 2.5vw, 40px);
+  min-height: clamp(44px, 3vw, 56px);
+}
+
+.btn--white:hover {
+  background: var(--black);
+  color: var(--white);
+}
+
+
+.btn--white:active {
+  background: var(--black);
+  color: var(--light-blue);
+  scale: calc(0.95);
+}
+
+/* Hover */
+.btn--secondary:hover {
+  background: var(--blue);
+}
+
+/* Focus (WCAG) */
+.btn--secondary:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+  background: var(--blue);
+}
+
+/* Active */
+.btn--secondary:active {
+  background: var(--blue);
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Disabled */
+.btn--secondary:disabled,
+.btn--secondary[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--black);
+}
+
+/* ===== МОДИФИКАТОРЫ ШИРИНЫ ===== */
+.btn--full {
+  width: 100%;
+  display: flex;
+}
+
+.btn--block {
+  width: 100%;
+  display: flex;
+  min-height: clamp(44px, 4vw, 72px);
+}
+
+/* ===== ВЫСОКИЙ КОНТРАСТ ===== */
+@media (forced-colors: active) {
+  .btn {
+    border: 2px solid ButtonText;
+  }
+  
+  .btn--primary:hover,
+  .btn--secondary:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ===== УМЕНЬШЕНИЕ ДВИЖЕНИЯ ===== */
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+  
+  .btn--primary:active,
+  .btn--secondary:active {
+    transform: none;
+  }
+}

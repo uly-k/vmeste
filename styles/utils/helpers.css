@@ -1,0 +1,61 @@
+/* ===== УТИЛИТАРНЫЕ КЛАССЫ ===== */
+
+/* Растягивание на всю ширину сетки */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Флекс-контейнеры */
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Позиционирование */
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+/* Текст */
+.text-center {
+  text-align: center;
+}
+
+/* Декоративная пунктирная линия снизу */
+.dashed-border-bottom {
+  position: relative;
+}
+
+.dashed-border-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--blue) 0px,
+    var(--blue) 9px,
+    transparent 9px,
+    transparent 18px
+  );
+  background-repeat: no-repeat;
+}

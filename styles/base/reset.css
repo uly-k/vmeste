@@ -1,0 +1,70 @@
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+html, body {
+  height: 100%;
+} 
+html, body {
+  height: 100%;
+  scrollbar-color: var(--blue) var(--light-blue);
+}
+
+body {
+  margin: 0;
+}
+
+
+
+/* Единый фокус для всех элементов при навигации с клавиатуры */
+*:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+}
+
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--blue);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-blue);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Кнопки-стрелки */
+::-webkit-scrollbar-button {
+  display: block;
+  height: 12px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 0L12 8H0L6 0Z' fill='%230077FF'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+::-webkit-scrollbar-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 8L0 0H12L6 8Z' fill='%230077FF'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}

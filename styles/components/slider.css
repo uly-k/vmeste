@@ -1,0 +1,168 @@
+.slider {
+    width: 1088px;
+    background: transparent;
+    padding: 54px 0 48px 0;
+}
+
+.range-slider {
+    width: 100%;
+}
+
+/* подписи сверху */
+.labels-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 0;
+}
+
+/* трек (дорожка) */
+.slider-track {
+    position: relative;
+    width: 100%;
+    height: 60px;
+}
+
+/* фоновая линия трека — ЧЁРНАЯ */
+.slider-track::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 4px;
+    background: #000000;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+/* заливка прогресса */
+.track-fill {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 5px;
+    background: var(--green);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.25s ease-out;
+    z-index: 2;
+}
+
+/* контейнер для кнопок */
+.track-buttons {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* каждая кнопка на ползунке */
+.track-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #000000;
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 0.7rem;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    position: relative;
+}
+
+.track-btn.green {
+    background: var(--green);
+    color: #000000;
+}
+
+/* активная кнопка */
+.track-btn.active {
+    background: var(--green) !important;
+    color: #000000 !important;
+    transform: scale(1.25);
+    box-shadow: inset 0 4px 6px rgba(0,0,0,0.25);
+    position: relative;
+    z-index: 20;
+}
+
+/* ховер для чёрных кнопок */
+.track-btn:hover:not(.green) {
+    transform: scale(1.1);
+    background: #222222;
+    box-shadow: inset 0 4px 6px rgba(0,0,0,0.25);
+}
+
+/* ховер для зелёных, но не активных */
+.track-btn.green:hover:not(.active) {
+    transform: scale(1.1);
+    background: var(--black);
+}
+
+/* ===== НОУТБУК (1608px) ===== */
+@media (max-width: 1608px) {
+    .slider {
+        width: 1000px;
+        padding: 40px 0 36px 0;
+    }
+}
+
+/* ===== ПЛАНШЕТ (1156px) ===== */
+@media (max-width: 1156px) {
+    .slider {
+        width: 600px;
+        padding: 32px 20px 28px 20px;
+    }
+    
+    .track-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.6rem;
+    }
+    
+    .slider-track {
+        height: 50px;
+    }
+    
+    .labels-top .label {
+        font-size: 1rem;
+    }
+}
+
+/* ===== МОБИЛКА (756px) ===== */
+@media (max-width: 756px) {
+    .slider {
+        width: 300px;
+        padding: 24px 16px 20px 16px;
+    }
+    
+    .track-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.5rem;
+    }
+    
+    .slider-track {
+        height: 44px;
+    }
+    
+    .labels-top .label {
+        font-size: 0.75rem;
+    }
+    
+    .labels-top {
+        margin-bottom: 16px;
+    }
+}

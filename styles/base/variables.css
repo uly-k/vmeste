@@ -1,0 +1,58 @@
+:root {
+  /* =========================
+     COLORS
+  ========================== */
+  --black: #000;
+  --white: #fff;
+  --blue: #0077FF;
+  --dark-blue: #0066da;
+  --light-blue: #EAF4FF;
+  --green: #BEF655;
+
+  /* =========================
+     GRADIENTS
+  ========================== */
+  --gradient-main: linear-gradient(to top, #BEF655 0%, #FFFFFF 60%);
+
+  /* =========================
+     LAYOUT
+  ========================== */
+  --header-height: 86px;
+
+  /* =========================
+     SPACING (8pt system)
+  ========================== */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-64: 64px;
+
+  /* =========================
+     TYPOGRAPHY BASE
+  ========================== */
+  --font-primary: "Inter Tight", sans-serif;
+  --lh-100: 100%;
+  --font-weight: 400;
+
+  /* =========================
+     TYPOGRAPHY SIZES (clamp)
+  ========================== */
+  --h1: clamp(54px, 8vw, 128px);
+  --h2: clamp(28px, 3.5vw, 64px);
+  --h3: clamp(16px, 2.5vw, 32px);
+  --body: clamp(12px, 1.5vw, 20px);
+  --dec: clamp(12px, 1.5vw, 16px);
+  --nav: clamp(16px, 2vw, 24px);
+  --btn-primary: clamp(16px, 2.5vw, 32px);
+  --btn-secondary: clamp(12px, 1.5vw, 20px);
+
+  /* =========================
+     BUTTON PADDING
+  ========================== */
+  --btn-padding-mobile: 12px 24px;
+  --btn-padding-desktop: 22px 60px;
+}
+
+/* ===== ГЛОБАЛЬНЫЕ СТИЛИ ССЫЛОК ===== */

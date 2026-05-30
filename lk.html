@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles/base/reset.css">
+  <link rel="stylesheet" href="styles/base/variables.css">
+  <link rel="stylesheet" href="styles/base/typography.css">
+  <link rel="stylesheet" href="styles/layout/grid.css">
+  <link rel="stylesheet" href="styles/layout/header.css">
+  <link rel="stylesheet" href="styles/components/buttons.css">
+  <link rel="stylesheet" href="styles/components/cards.css">
+  <link rel="stylesheet" href="styles/layout/footer.css">
+  <link rel="stylesheet" href="styles/utils/helpers.css">
+  <link rel="stylesheet" href="styles/pages/lk.css">
+
+  <title>Личный кабинет — (в)месте</title>
+  
+</head>
+
+<body>
+    <!-- ФОНОВЫЕ БЛОКИ -->
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="layout header__inner">
+      <div class="logo">
+        <a href="index.html"><img src="media/лого.png" alt="(в)месте"></a>
+      </div>
+      <nav class="nav">
+        <a href="magazin.html">магазин</a>
+        <a href="afisha.html">афиша</a>
+        <a href="about vmeste.html">о пространстве</a>
+        <a href="about neiro.html">о нейроразнообразии</a>
+        <a href="lk.html" class="nav-cart">личный кабинет</a>
+        <a href="korzina.html" class="cart">корзина
+          <span class="nav-cart__icon">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+              <rect width="30" height="30" rx="12" fill="#0178FF"/>
+            </svg>
+            <span class="nav-cart__count">0</span>
+          </span>
+        </a>
+      </nav>
+      <div class="header__mobile-right">
+        <a href="korzina.html" aria-label="Корзина">
+          <span class="cart-icon__icon">
+            <svg width="44" height="38" viewBox="0 0 44 38" fill="none">
+              <path d="M21.542 0C25.9345 6.2473e-05 28.7988 1.90151 30.501 4.36328C31.9201 6.41578 32.4857 8.78502 32.5967 10.6074H40.2998C42.2017 10.6074 43.6236 12.3545 43.2373 14.2168L38.8047 35.584C38.5157 36.9761 37.289 37.9736 35.8672 37.9736H7.83008C6.42809 37.9736 5.21247 37.0032 4.90332 35.6357L0.0751953 14.2686C-0.348692 12.3924 1.0776 10.6077 3.00098 10.6074H10.3477C10.4828 8.78265 11.0841 6.40701 12.5361 4.35156C14.268 1.90026 17.1509 6.07893e-05 21.542 0ZM21.542 3C18.1528 3.00006 16.1721 4.40373 14.9863 6.08203C13.9622 7.53158 13.4917 9.25329 13.3584 10.6074H29.5898C29.4801 9.25083 29.037 7.52241 28.0332 6.07031C26.88 4.40241 24.9298 3.00006 21.542 3Z" fill="#0178FF"/>
+            </svg>
+            <span class="nav-cart__count">0</span>
+          </span>
+        </a>
+        <button class="burger" aria-label="Открыть меню" aria-expanded="false">
+          <span class="burger__line"></span>
+          <span class="burger__line"></span>
+          <span class="burger__line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-menu">
+    <div class="mobile-menu__inner">
+      <nav class="mobile-menu__nav">
+        <a href="magazin.html">магазин</a>
+        <a href="afisha.html">афиша</a>
+        <a href="about vmeste.html">о пространстве</a>
+        <a href="about neiro.html">о нейроразнообразии</a>
+        <a href="lk.html">личный кабинет</a>
+      </nav>
+    </div>  
+  </div>
+  <main id="lk" class="layout">
+    <!-- ЛЕВАЯ КОЛОНКА -->
+    <div class="lk-left">
+      <div class="lk-left-content">
+        <h3 id="bt">личный кабинет</h3>
+        
+        <div class="user-card">
+          <img class="user-card__img" src="media/photolk.png" alt="фотография пользователя">
+          <div class="blk">
+            <button class="b_sett" onclick="window.logout()">
+              <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                <path d="M15 10C14.0111 10 13.0444 10.2933 12.2222 10.8426C11.3999 11.3921 10.759 12.173 10.3806 13.0866C10.0022 14.0002 9.90315 15.0055 10.0961 15.9755C10.289 16.9454 10.7652 17.8363 11.4645 18.5355C12.1637 19.2347 13.0546 19.711 14.0245 19.9039C14.9945 20.0969 15.9998 19.9979 16.9134 19.6194C17.827 19.241 18.608 18.6001 19.1574 17.7779C19.7068 16.9556 20 15.9889 20 15C20 13.6739 19.4732 12.4022 18.5355 11.4645C17.5979 10.5268 16.3261 10 15 10ZM15 17.5C14.5055 17.5 14.0223 17.3534 13.6111 17.0786C13.2 16.804 12.8795 16.4135 12.6902 15.9567C12.5011 15.4999 12.4516 14.9973 12.548 14.5123C12.6445 14.0274 12.8826 13.5819 13.2323 13.2323C13.5819 12.8826 14.0274 12.6445 14.5123 12.548C14.9973 12.4516 15.4999 12.5011 15.9567 12.6902C16.4135 12.8795 16.804 13.2 17.0786 13.6111C17.3534 14.0223 17.5 14.5055 17.5 15C17.5 15.663 17.2366 16.2989 16.7677 16.7677C16.2989 17.2366 15.663 17.5 15 17.5Z" fill="white"/>
+              </svg>
+            </button>
+          </div>
+          <div id="name_sur">
+            <h3 id="profile-name">Анна</h3>
+            <h3 id="profile-surname">Смирнова</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА -->
+    <div class="lk-right">
+      <div class="lk-right-header">
+        <h3 >посещения и покупки</h3>
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">все</button>
+          <button class="filter-btn" data-filter="past">прошедшие</button>
+        </div>
+      </div>
+
+      <div class="pokupki-grid" id="cardsContainer">
+        <!-- карточки будут через JS -->
+      </div>
+    </div>
+  </main>
+    
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div id="fbackf">
+      <div class="layout">
+        <h1 id="zf" class="full-width">До встречи (в)месте!</h1>
+        <article class="foot_nav">
+          <div class="navc"><a href="index.html"><img src="media/f1.png" alt=""></a><a href="index.html"><p>главная</p></a></div>
+          <div class="navc"><a href="about vmeste.html"><img src="media/f2.png" alt=""></a><a href="about vmeste.html"><p>о пространстве</p></a></div>
+          <div class="navc"><a href="about neiro.html"><img src="media/f3.png" alt=""></a><a href="about neiro.html"><p>нейроразнообразие</p></a></div>
+          <div class="navc"><a href="afisha.html"><img src="media/f4.png" alt=""></a><a href="afisha.html"><p>афиша</p></a></div>
+          <div class="navc"><a href="magazin.html"><img src="media/f5.png" alt=""></a><a href="magazin.html"><p>магазин</p></a></div>
+          <div class="navc"><a href="lk.html"><img src="media/f6.png" alt=""></a><a href="lk.html"><p>личный кабинет</p></a></div>
+        </article>
+        <div class="nizb">
+          <div class="footer__subscribe">
+            <p class="footer__subscribe-text">хотите к нам в команду?</p>
+            <form class="input-arrow">
+              <input type="email" placeholder="ваша почта" class="input-arrow__field">
+              <button type="submit" class="input-arrow__btn">
+                <svg width="40" height="23" viewBox="0 0 40 23" fill="none"><path d="M39.124 11.5006L19.2046 23.0012L19.2046 13.4926L-9.38835e-07 13.4926L-6.6163e-07 9.50867L19.2046 9.50868L19.2046 1.33629e-06L39.124 11.5006Z" fill="black"/></svg>
+              </button>
+            </form>
+          </div>
+          <div class="footer__socials">
+            <p>следите за нами</p>
+            <div class="footer__icons">
+              <a href="#" class="icon"><img src="media/icon_telegram.png" alt=""></a>
+              <a href="#" class="icon"><img src="media/icon_vk.png" alt=""></a>
+              <a href="#" class="icon"><img src="media/icon_dzen.png" alt=""></a>
+            </div>
+          </div>
+          <div><button class="footer__buttonup"><svg width="35" height="57" viewBox="0 0 35 57" fill="none"><path d="M17.3203 -1.30331e-06L34.6406 30L20.3203 30L20.3203 56.1973L14.3203 56.1973L14.3203 30L-1.97128e-06 30L17.3203 -1.30331e-06Z" fill="white"/></svg></button></div>
+        </div>
+      </div>
+    </div>
+    <div id="sback" class="layout">
+      <h3 id="contactz" class="full-width">связаться с нами</h3>
+      <div class="footer__contacts">
+        <div class="footer__card footer__card--narrow footer__card--green"><h2>нко «(в)месте»</h2><p>ИНН</p><p>426009 г. Санкт-Петербург,<br>Набережная реки Карповки 5АК</p></div>
+        <div class="footer__card footer__card--narrow footer__card--blue"><div><h2>8 927 744 45 05</h2><h2>vmeste@mail.ru</h2></div><p class="footer__note">телефон. звонок бесплатный внутри России</p></div>
+        <div class="footer__links"><p>Документы</p><div class="footer__linksw"><a href="#"><p>договор оферты</p></a><a href="#"><p>пользовательское соглашение</p></a><a href="#"><p>политика в отношении обработки персональных данных</p></a><a href="#"><p>политика конфиденциальности</p></a></div></div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ -->
+  <div id="auth-modal" class="modal" style="display: none;">
+    <div class="modal__overlay"></div>
+    <div class="modal__container">
+      
+      <button class="modal__close" aria-label="Закрыть">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div id="modal-login" class="modal__form active">
+        <div class="modal__fields">
+          <h2 class="modal__title">Вход в аккаунт</h2>
+          <div class="input-group">
+            <input type="email" id="login-email" placeholder="Электронная почта" class="modal__input">
+          </div>
+          <div class="input-group">
+            <input type="password" id="login-password" placeholder="Пароль" class="modal__input">
+          </div>
+          <a href="#" id="forgot-link" class="modal__link">Забыли пароль?</a>
+          <button id="login-btn-action" class="modal__btn">Войти</button>
+          <p class="modal__switch">
+            Нет аккаунта? 
+            <a href="#" id="to-register-link" class="modal__link">Зарегистрироваться</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="modal-register" class="modal__form">
+        <div class="modal__fields">
+          <h2 class="modal__title">Регистрация</h2>
+          <div class="input-group">
+            <input type="text" id="reg-name" placeholder="Имя" class="modal__input">
+          </div>
+          <div class="input-group">
+            <input type="text" id="reg-surname" placeholder="Фамилия" class="modal__input">
+          </div>
+          <div class="input-group">
+            <input type="email" id="reg-email" placeholder="Электронная почта" class="modal__input">
+          </div>
+          <div class="input-group">
+            <input type="password" id="reg-password" placeholder="Пароль" class="modal__input">
+          </div>
+          <div class="input-group code-group" id="reg-code-group" style="display: none;">
+            <input type="text" id="reg-confirm-code" placeholder="Введите код из письма" class="modal__input">
+            <button id="verify-code-btn" class="modal__btn-small">Подтвердить</button>
+          </div>
+          <button id="register-btn-action" class="modal__btn">Зарегистрироваться</button>
+          <p class="modal__switch">
+            Уже есть аккаунт? 
+            <a href="#" id="to-login-link" class="modal__link">Войти</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="modal-reset" class="modal__form">
+        <div class="modal__fields">
+          <h2 class="modal__title">Восстановление пароля</h2>
+          <div class="input-group">
+            <input type="email" id="reset-email" placeholder="Электронная почта" class="modal__input">
+          </div>
+          <div class="input-group code-group" id="reset-code-group" style="display: none;">
+            <input type="text" id="reset-confirm-code" placeholder="Введите код из письма" class="modal__input">
+            <button id="reset-verify-code-btn" class="modal__btn-small">Подтвердить код</button>
+          </div>
+          <div class="input-group" id="new-password-group" style="display: none;">
+            <input type="password" id="new-password" placeholder="Новый пароль" class="modal__input">
+            <input type="password" id="confirm-password" placeholder="Повторите пароль" class="modal__input">
+            <button id="set-new-password-btn" class="modal__btn">Сохранить пароль</button>
+          </div>
+          <button id="reset-send-code-btn" class="modal__btn">Отправить код</button>
+          <p class="modal__switch">
+            <a href="#" id="back-to-login-link" class="modal__link">Вернуться ко входу</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="modal-message" class="modal__message"></div>
+      
+    </div>
+  </div>
+
+  <script src="js/burger.js"></script>
+  <script src="js/up.js"></script>
+  <script src="js/auth-modal.js"></script>
+
+</body>
+</html>
+
+

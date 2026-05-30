@@ -1,0 +1,614 @@
+/* =====================================================
+   lk.css — личный кабинет
+   ===================================================== */
+
+/* ПРИНУДИТЕЛЬНО ВКЛЮЧАЕМ СКРОЛЛ */
+html {
+    overflow-y: scroll !important;
+}
+
+body {
+    overflow-y: visible !important;
+    min-height: 100vh;
+    background-color: var(--white);
+}
+
+/* ПОЛЗУНОК ВСЕГДА ВИДЕН */
+::-webkit-scrollbar {
+    width: 12px;
+    display: block !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--blue);
+    border-radius: 6px;
+}
+
+#lk {
+    padding-top: 120px;
+    padding-bottom: 60px;
+    min-height: 100vh;
+    gap: 0;
+}
+
+/* ЛЕВАЯ КОЛОНКА — КОЛОНКИ 1-3 */
+.lk-left {
+    grid-column: 1 / 4;
+    background-color: var(--white);
+    border-radius: 32px;
+    padding: 0 0 32px 0;
+    align-self: start;
+}
+
+#bt {
+    color: var(--blue);
+    padding: 0 0 24px 0;
+    margin: 0;
+}
+
+/* КАРТОЧКА ПОЛЬЗОВАТЕЛЯ */
+.user-card {
+    background-color: var(--green);
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 3px 7px 17px 0 rgba(0, 0, 0, 0.2);
+}
+
+.user-card__img {
+    width: 100%;
+    height: 290px;
+    object-fit: cover;
+}
+
+.b_sett {
+    width: 50px;
+    height: 50px;
+    background-color: var(--black);
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+}
+
+.b_sett:hover {
+    background-color: var(--blue);
+}
+
+.b_sett svg {
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+}
+
+.b_sett:hover svg path {
+    fill: var(--white);
+}
+
+#name_sur {
+    padding: 24px 24px 32px 24px;
+}
+
+#name_sur h3 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.blk {
+    padding-right: 24px;
+    padding-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ПРАВАЯ КОЛОНКА — КОЛОНКИ 5-12 */
+.lk-right {
+    grid-column: 5 / -1;
+    padding: 0;
+}
+
+/* ЗАГОЛОВОК — С 6 КОЛОНКИ */
+.lk-right-header {
+    grid-column: 6 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.lk-right-header h3 {
+    color: var(--black);
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Кнопки фильтров */
+.filter-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 40px;
+    font-family: var(--font-primary);
+    font-size: var(--body);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--black);
+}
+
+.filter-btn.active {
+    background-color: var(--blue);
+    color: var(--white);
+}
+
+.filter-btn:hover:not(.active) {
+    background-color: rgba(1, 120, 255, 0.1);
+}
+
+/* КАРТОЧКИ — НАСЛЕДУЮТ СЕТКУ ОТ .layout */
+.pokupki-grid {
+    display: contents;
+}
+
+/* ПЕРВАЯ КАРТОЧКА — КОЛОНКИ 6-8 */
+.pokupka_card:first-child {
+    grid-column: 6 / 9;
+}
+
+/* ВТОРАЯ КАРТОЧКА — КОЛОНКИ 9-11 */
+.pokupka_card:last-child {
+    grid-column: 9 / 12;
+}
+
+/* КАРТОЧКА ТОВАРА */
+.pokupka_card {
+    background-color: var(--white);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    height: 500px;
+}
+
+.pokupka__img {
+    width: 100%;
+    height: 290px;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+.product_name h3 {
+    padding-right: 20px;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.status {
+    color: var(--blue);
+    font-size: 14px;
+    font-family: var(--font-primary);
+    padding-left: 20px;
+}
+
+/* КНОПКИ - слева и справа внизу */
+.knopki {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    padding: 0 20px 20px 20px;
+}
+
+.btn--secondary {
+    background-color: var(--blue);
+    color: var(--white);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-size: 14px;
+    flex: 0 0 auto;
+}
+
+.btn--secondary:hover {
+    background-color: var(--dark-blue);
+}
+
+.btn--linkzak {
+    background: none;
+    border: none;
+    color: var(--black);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 12px 20px;
+    font-size: 14px;
+    flex: 0 0 auto;
+}
+
+.btn--linkzak:hover {
+    color: #ff4444;
+}
+
+/* АДАПТИВ — ПЛАНШЕТ (1156px, 6 колонок) */
+@media (max-width: 1156px) {
+    .lk-left {
+        grid-column: 1 / 3;
+    }
+    
+    .lk-right {
+        grid-column: 4 / -1;
+    }
+    
+    .lk-right-header {
+        grid-column: 1 / -1;
+    }
+    
+    .pokupki-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .pokupka_card:first-child,
+    .pokupka_card:last-child {
+        grid-column: auto;
+    }
+}
+
+/* АДАПТИВ — МОБИЛКА (756px, 4 колонки) */
+@media (max-width: 756px) {
+    #lk {
+        padding-top: 100px;
+    }
+    
+    .lk-left {
+        grid-column: 1 / -1;
+        margin-bottom: 24px;
+    }
+    
+    .lk-right {
+        grid-column: 1 / -1;
+    }
+    
+    .lk-right-header {
+        flex-direction: column;
+        align-items: flex-start;
+        grid-column: 1 / -1;
+    }
+    
+    .pokupki-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .pokupka_card:first-child,
+    .pokupka_card:last-child {
+        grid-column: auto;
+    }
+    
+    .knopki {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .btn--secondary, .btn--linkzak {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+/* =====================================================
+   МОДАЛЬНОЕ ОКНО АВТОРИЗАЦИИ
+   ===================================================== */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.modal__container {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--white, #ffffff);
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.modal__close:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.modal__close:active {
+  transform: scale(0.95);
+}
+
+.modal__fields {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal__title {
+  font-size: 26px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--black, #1a1a1a);
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+}
+
+.modal__input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 60px;
+  font-size: 16px;
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  background: var(--white, #ffffff);
+}
+
+.modal__input:focus {
+  outline: none;
+  border-color: var(--blue, #0178FF);
+  box-shadow: 0 0 0 3px rgba(1, 120, 255, 0.1);
+}
+
+.modal__input:hover {
+  border-color: var(--blue, #0178FF);
+}
+
+.modal__link {
+  color: var(--blue, #0178FF);
+  text-decoration: none;
+  font-size: var(--dec, clamp(12px, 1.5vw, 16px));
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+  text-align: center;
+  display: inline-block;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.modal__link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.modal__btn {
+  width: 100%;
+  background-color: var(--blue, #0178FF);
+  color: var(--white, #ffffff);
+  border: none;
+  padding: 14px;
+  border-radius: 60px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal__btn:hover {
+  background-color: var(--dark-blue, #0056b3);
+  transform: scale(1.02);
+}
+
+.modal__btn:active {
+  transform: scale(0.98);
+}
+
+.modal__btn-small {
+  background-color: var(--blue, #0178FF);
+  color: var(--white, #ffffff);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 60px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.modal__btn-small:hover {
+  background-color: var(--dark-blue, #0056b3);
+}
+
+.modal__switch {
+  text-align: center;
+  font-size: var(--dec, clamp(12px, 1.5vw, 16px));
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+  margin-top: 8px;
+  color: #666;
+}
+
+.modal__switch .modal__link {
+  margin-left: 4px;
+}
+
+.modal__form {
+  display: none;
+}
+
+.modal__form.active {
+  display: block;
+}
+
+.modal__message {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  padding: 12px 16px;
+  border-radius: 60px;
+  font-size: var(--dec, clamp(12px, 1.5vw, 16px));
+  font-family: var(--font-primary, 'Inter Tight', sans-serif);
+  text-align: center;
+  display: none;
+  z-index: 10;
+  font-weight: 500;
+}
+
+.modal__message--error {
+  background-color: #ff4444;
+  color: white;
+}
+
+.modal__message--success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Группа для ввода кода */
+.code-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.code-group .modal__input {
+  flex: 1;
+}
+
+/* Группа для нового пароля */
+#new-password-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.input-group {
+  width: 100%;
+}
+
+/* Скрытие/показ для восстановления пароля */
+#reset-code-group,
+#new-password-group,
+#reg-code-group {
+  transition: all 0.2s ease;
+}
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 480px) {
+  .modal__container {
+    max-width: calc(100% - 32px);
+    margin: 16px;
+    border-radius: 32px;
+  }
+  
+  .modal__title {
+    font-size: 22px;
+  }
+  
+  .modal__fields {
+    padding: 24px;
+    gap: 16px;
+  }
+  
+  .modal__input {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 50px;
+  }
+  
+  .modal__btn,
+  .modal__btn-small {
+    border-radius: 50px;
+    padding: 12px;
+  }
+  
+  .modal__link,
+  .modal__switch {
+    font-size: clamp(11px, 3vw, 14px);
+  }
+  
+  .modal__close {
+    width: 32px;
+    height: 32px;
+    top: 12px;
+    right: 12px;
+  }
+}
+
+/* Уменьшение движения для пользователей с vestibular disorders */
+@media (prefers-reduced-motion: reduce) {
+  .modal__container {
+    animation: none;
+  }
+  
+  .modal__btn:hover {
+    transform: none;
+  }
+  
+  .modal__close:hover {
+    transform: none;
+  }
+}

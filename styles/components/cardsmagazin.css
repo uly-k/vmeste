@@ -1,0 +1,141 @@
+/* Карточка сотрудника (на основе magazcard) */
+.team-card {
+  background-color: var(--white);
+  display: flex;
+  border-radius: 24px;
+  height: 502px;
+  flex-direction: column;
+}
+
+.team-card img {
+  object-fit: cover;
+  border-radius: 24px;
+  height: 288px;
+  width: 100%;
+}
+
+.team-card .vn_text {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.team-card .vn_cont {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  padding: 16px;
+  justify-content: space-between;
+}
+
+
+
+/* ===== КОМАНДА ===== */
+#team {
+  background-color: var(--light-blue);
+}
+
+.team__grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+/* Карточка занимает 3 колонки на десктопе */
+.team-card {
+  grid-column: span 3;
+}
+
+/* Анимация появления */
+.team-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.team-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.team__loadmore-wrapper {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+/* Планшет: 2 карточки в ряд */
+@media (max-width: 1156px) {
+
+    .team__grid{
+
+        gap: 16px;
+    }
+  .team-card {
+    grid-column: span 2;
+    height: 368px;
+    border-radius: 20px;
+  }
+
+  .team-card img {
+    object-fit: cover;
+    height: 220px;
+    width: 100%;
+    border-radius: 20px;
+  }
+
+  .team-card .vn_cont {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    padding: 12px;
+    justify-content: space-between;
+  }
+
+  .team__loadmore-wrapper {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+    }
+}
+
+/* Мобилка: 1 карточка в ряд */
+@media (max-width: 756px) {
+
+  .team__grid{
+
+    gap: 8px;
+  }
+  .team-card {
+    grid-column: span 2;
+    border-radius: 8px;
+    height: 248px;
+    
+  }
+
+  .team-card img {
+    height: 132px;
+    border-radius: 8px;
+  }
+
+  .team-card .vn_cont {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    padding: 8px;
+    justify-content: space-between;
+  }
+
+  .team__loadmore-wrapper {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+}
