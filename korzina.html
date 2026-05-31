@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="media/лого.png">
+  <link rel="apple-touch-icon" href="media/лого.png">
+  <script src="js/local-cache.js"></script>
 
   <!-- fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400&display=swap" rel="stylesheet">
@@ -15,11 +18,13 @@
 
   <link rel="stylesheet" href="styles/layout/grid.css">
   <link rel="stylesheet" href="styles/layout/header.css">
+  <link rel="stylesheet" href="styles/layout/footer.css">
 
   <link rel="stylesheet" href="styles/components/buttons.css">
   <link rel="stylesheet" href="styles/components/cards.css">
 
   <link rel="stylesheet" href="styles/pages/home.css">
+  <link rel="stylesheet" href="styles/pages/cart.css">
 
   <title>(в)месте корзина</title>
 </head>
@@ -88,71 +93,51 @@
       </nav>
     </div>  
   </div>
-  <main>
-
-
-    
+  <main id="cart" class="layout layout--padding">
+    <div id="cartRoot"></div>
   </main>
 
-  <!-- FOOTER -->
+  <div class="checkout-modal" id="checkoutModal" hidden>
+    <button class="checkout-modal__overlay" type="button" data-checkout-close aria-label="Закрыть оформление"></button>
+    <section class="checkout-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+      <button class="checkout-modal__close" type="button" data-checkout-close aria-label="Закрыть">×</button>
+      <p class="checkout-modal__eyebrow">оформление заказа</p>
+      <h2 id="checkoutTitle">где забрать заказ?</h2>
+      <p class="checkout-modal__intro">Выберите точку самовывоза. Когда заказ будет готов, статус обновится в личном кабинете.</p>
+      <label class="pickup-option">
+        <input type="radio" name="pickup-point" value="vmeste-karpovka" checked>
+        <span>
+          <strong>забрать из пространства (в)месте</strong>
+          <small>Санкт-Петербург, набережная реки Карповки, 5АК</small>
+        </span>
+      </label>
+      <p class="checkout-modal__status" id="checkoutModalStatus"></p>
+      <button class="btn btn--primary btn--full" id="checkoutConfirm" type="button">подтвердить заказ</button>
+    </section>
+  </div>
+
   <footer class="footer">
-    <div id="fbackf" >
+    <div id="fbackf">
       <div class="layout">
-        <h1 id="zf" class="full-width" >До встречи (в)месте!</h1>
-        <article class="foot_nav"> 
-          <div class="navc"> 
-            <a href="index.html"><img src="media/f1.png" alt=""></a>
-            <a href="index.html"><p>главная</p></a>
-          </div>
-
-          <div class="navc"> 
-            <a href="about vmeste.html"><img src="media/f2.png" alt=""></a>
-            <a href="about vmeste.html"><p>о пространстве</p></a>
-          </div>
-
-          <div class="navc"> 
-            <a href="about neiro.html"><img src="media/f3.png" alt=""></a>
-            <a href="about neiro.html"><p>нейроразнообразие</p></a>
-          </div>
-
-          <div class="navc"> 
-            <a href="afisha.html"><img src="media/f4.png" alt=""></a>
-            <a href="afisha.html"><p>афиша</p></a>
-          </div>
-
-          <div class="navc"> 
-            <a href="magazin.html"><img src="media/f5.png" alt=""></a>
-            <a href="magazin.html"><p>магазин</p></a>
-          </div>
-
-          <div class="navc"> 
-            <a href="lk.html"> <img src="media/f6.png" alt=""></a>
-            <a href="lk.html"><p>личный кабинет</p></a>
-          </div>
-
+        <h1 id="zf" class="full-width">До встречи (в)месте!</h1>
+        <article class="foot_nav">
+          <div class="navc"><a href="index.html"><img src="media/f1.png" alt=""></a><a href="index.html"><p>главная</p></a></div>
+          <div class="navc"><a href="about vmeste.html"><img src="media/f2.png" alt=""></a><a href="about vmeste.html"><p>о пространстве</p></a></div>
+          <div class="navc"><a href="about neiro.html"><img src="media/f3.png" alt=""></a><a href="about neiro.html"><p>нейроразнообразие</p></a></div>
+          <div class="navc"><a href="afisha.html"><img src="media/f4.png" alt=""></a><a href="afisha.html"><p>афиша</p></a></div>
+          <div class="navc"><a href="magazin.html"><img src="media/f5.png" alt=""></a><a href="magazin.html"><p>магазин</p></a></div>
+          <div class="navc"><a href="lk.html"><img src="media/f6.png" alt=""></a><a href="lk.html"><p>личный кабинет</p></a></div>
         </article>
-      
         <div class="nizb">
           <div class="footer__subscribe">
             <p class="footer__subscribe-text">хотите к нам в команду?</p>
             <form class="input-arrow">
-              <input 
-                type="email" 
-                placeholder="ваша почта" 
-                class="input-arrow__field"
-              >
-
-              <button type="submit" class="input-arrow__btn">
-                <!-- вставь сюда SVG из Figma -->
-                <svg width="40" height="23" viewBox="0 0 40 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M39.124 11.5006L19.2046 23.0012L19.2046 13.4926L-9.38835e-07 13.4926L-6.6163e-07 9.50867L19.2046 9.50868L19.2046 1.33629e-06L39.124 11.5006Z" fill="black"/>
-                </svg>
-
+              <input type="email" placeholder="ваша почта" class="input-arrow__field">
+              <button type="submit" class="input-arrow__btn" aria-label="Отправить почту">
+                <svg width="40" height="23" viewBox="0 0 40 23" fill="none"><path d="M39.124 11.5006L19.2046 23.0012L19.2046 13.4926L-9.38835e-07 13.4926L-6.6163e-07 9.50867L19.2046 9.50868L19.2046 1.33629e-06L39.124 11.5006Z" fill="black"/></svg>
               </button>
             </form>
           </div>
-      
-        
           <div class="footer__socials">
             <p>следите за нами</p>
             <div class="footer__icons">
@@ -161,65 +146,26 @@
               <a href="#" aria-label="Еще" class="icon"><img src="media/icon_dzen.png" alt=""></a>
             </div>
           </div>
-
-          <div>
-            <button class="footer__buttonup"> 
-              <svg width="35" height="57" viewBox="0 0 35 57" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M17.3203 -1.30331e-06L34.6406 30L20.3203 30L20.3203 56.1973L14.3203 56.1973L14.3203 30L-1.97128e-06 30L17.3203 -1.30331e-06Z" fill="white"/>
-              </svg>
-
-            </button>
-          </div>
+          <div><button class="footer__buttonup" aria-label="Наверх"><svg width="35" height="57" viewBox="0 0 35 57" fill="none"><path d="M17.3203 -1.30331e-06L34.6406 30L20.3203 30L20.3203 56.1973L14.3203 56.1973L14.3203 30L-1.97128e-06 30L17.3203 -1.30331e-06Z" fill="white"/></svg></button></div>
         </div>
       </div>
-        
     </div>
-
-
-    <div id="sback" class="layout"> 
-
-      <h3 id="contactz"  class="full-width">связаться с нами</h3>
-
-          <div class="footer__contacts">
-
-            <!-- карточка 1 -->
-            <div class="footer__card footer__card--narrow footer__card--green">
-              <h2>нко «(в)месте»</h2>
-              <p>ИНН</p>
-              <p>
-                426009 г. Санкт-Петербург,<br>
-                Набережная реки Карповки 5АК
-              </p>
-            </div>
-
-            <!-- карточка 2 -->
-            <div class="footer__card footer__card--narrow footer__card--blue">
-              <div><h2>8 927 744 45 05</h2>
-              <h2>vmeste@mail.ru</h2></div>
-              <p class="footer__note">телефон. звонок бесплатный внутри России</p>
-            </div>
-
-            <!-- карточка 3 -->
-            <div class="footer__links">
-              <p>Документы</p>
-              <div class="footer__linksw"> 
-               <a href="#"><p>договор оферты</p></a>
-               <a href="#"><p>пользовательское соглашение</p></a>
-               <a href="#"><p>политика в отношении обработки персональных данных</p></a>
-               <a href="#"><p>политика конфиденциальности</p></a>
-              </div>
-              
-            </div>
-          </div>
-
+    <div id="sback" class="layout">
+      <h3 id="contactz" class="full-width">связаться с нами</h3>
+      <div class="footer__contacts">
+        <div class="footer__card footer__card--narrow footer__card--green"><h2>нко «(в)месте»</h2><p>ИНН</p><p>426009 г. Санкт-Петербург,<br>Набережная реки Карповки 5АК</p></div>
+        <div class="footer__card footer__card--narrow footer__card--blue"><div><h2>8 927 744 45 05</h2><h2>vmeste@mail.ru</h2></div><p class="footer__note">телефон. звонок бесплатный внутри России</p></div>
+        <div class="footer__links"><p>Документы</p><div class="footer__linksw"><a href="#"><p>договор оферты</p></a><a href="#"><p>пользовательское соглашение</p></a><a href="#"><p>политика в отношении обработки персональных данных</p></a><a href="#"><p>политика конфиденциальности</p></a></div></div>
+      </div>
     </div>
-  
-
-
   </footer>
 
-
-
-  
+  <script src="js/burger.js"></script>
+  <script src="js/up.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/cart-page.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
 </body>
 </html>

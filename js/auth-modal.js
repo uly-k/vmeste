@@ -1,515 +1,613 @@
 // ============================================================
-// АВТОРИЗАЦИЯ - ДЕМО-ВЕРСИЯ (без бэкенда)
+// Авторизация через Supabase Auth
 // ============================================================
 
-// ========== ДЕМО-РЕЖИМ: РАБОТА С LOCALSTORAGE ==========
-const STORAGE_KEY = 'vmeste_demo_user';
+const authClient = window.vmesteSupabase;
+const DEFAULT_PROFILE_AVATAR = 'media/profile-placeholder.svg';
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+const AVATAR_MAX_SIDE = 1200;
 
-function saveUserToStorage(userData) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+let selectedAvatarFile = null;
+let removeAvatarRequested = false;
+
+function withTimeout(promise, timeoutMs = 15000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('timeout')), timeoutMs);
+        }),
+    ]);
 }
 
-function getUserFromStorage() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : null;
+function setSaveProfileStatus(text) {
+    const saveButtonText = document.querySelector('#save-profile-settings .modal__btn-text');
+    if (saveButtonText) saveButtonText.textContent = text;
 }
 
-function clearUserFromStorage() {
-    localStorage.removeItem(STORAGE_KEY);
+function translateAuthError(error) {
+    const message = error?.message || '';
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes('only request this after')) {
+        const seconds = message.match(/after\s+(\d+)\s+seconds?/i)?.[1];
+        return seconds
+            ? `Повторите попытку через ${seconds} сек.`
+            : 'Повторите попытку немного позже.';
+    }
+    if (normalized.includes('user already registered')) {
+        return 'Пользователь с такой почтой уже зарегистрирован.';
+    }
+    if (normalized.includes('invalid login credentials')) {
+        return 'Неверная почта или пароль.';
+    }
+    if (normalized.includes('email not confirmed')) {
+        return 'Сначала подтвердите почту по ссылке из письма.';
+    }
+    if (normalized.includes('password should be at least')) {
+        return 'Пароль слишком короткий. Используйте не менее 6 символов.';
+    }
+    if (normalized.includes('unable to validate email address') || normalized.includes('invalid email')) {
+        return 'Проверьте правильность адреса электронной почты.';
+    }
+    if (normalized.includes('rate limit') || normalized.includes('too many requests')) {
+        return 'Слишком много попыток. Повторите немного позже.';
+    }
+
+    return 'Не удалось выполнить действие. Попробуйте ещё раз.';
 }
 
-function isLoggedIn() {
-    return getUserFromStorage() !== null;
+function showModalMessage(text, isError = true) {
+    const message = document.getElementById('modal-message');
+    if (!message) return;
+
+    message.textContent = text;
+    message.className = `modal__message ${isError ? 'modal__message--error' : 'modal__message--success'}`;
+    message.style.display = 'block';
 }
 
-// ========== ФУНКЦИИ МОДАЛКИ ==========
+function clearModalMessage() {
+    const message = document.getElementById('modal-message');
+    if (message) message.style.display = 'none';
+}
+
+function setResetPasswordMode(enabled) {
+    const sendButton = document.getElementById('reset-send-code-btn');
+    const passwordGroup = document.getElementById('new-password-group');
+    const codeGroup = document.getElementById('reset-code-group');
+
+    if (sendButton) sendButton.style.display = enabled ? 'none' : 'block';
+    if (passwordGroup) passwordGroup.style.display = enabled ? 'flex' : 'none';
+    if (codeGroup) codeGroup.style.display = 'none';
+}
+
 window.openAuthModal = function(formType = 'login') {
     const modal = document.getElementById('auth-modal');
-    if (!modal) {
-        console.warn('Модальное окно не найдено в DOM');
-        return;
-    }
-    
-    const loginForm = document.getElementById('modal-login');
-    const registerForm = document.getElementById('modal-register');
-    const resetForm = document.getElementById('modal-reset');
-    
-    if (loginForm) loginForm.classList.remove('active');
-    if (registerForm) registerForm.classList.remove('active');
-    if (resetForm) resetForm.classList.remove('active');
-    
-    if (formType === 'login' && loginForm) loginForm.classList.add('active');
-    else if (formType === 'register' && registerForm) registerForm.classList.add('active');
-    else if (formType === 'reset' && resetForm) resetForm.classList.add('active');
-    
-    document.querySelectorAll('.modal__input').forEach(input => {
-        if (input) input.value = '';
+    if (!modal) return;
+
+    document.querySelectorAll('.modal__form').forEach(form => {
+        form.classList.remove('active');
     });
-    
-    const regCodeGroup = document.getElementById('reg-code-group');
-    const resetCodeGroup = document.getElementById('reset-code-group');
-    const newPasswordGroup = document.getElementById('new-password-group');
-    const registerBtn = document.getElementById('register-btn-action');
-    const resetSendBtn = document.getElementById('reset-send-code-btn');
-    
-    if (regCodeGroup) regCodeGroup.style.display = 'none';
-    if (resetCodeGroup) resetCodeGroup.style.display = 'none';
-    if (newPasswordGroup) newPasswordGroup.style.display = 'none';
-    if (registerBtn) registerBtn.textContent = 'Зарегистрироваться';
-    if (resetSendBtn) resetSendBtn.style.display = 'block';
-    
+    document.getElementById(`modal-${formType}`)?.classList.add('active');
+
+    if (formType !== 'reset') setResetPasswordMode(false);
+    clearModalMessage();
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    
-    const modalMessage = document.getElementById('modal-message');
-    if (modalMessage) modalMessage.style.display = 'none';
 };
 
 window.closeAuthModal = function() {
     const modal = document.getElementById('auth-modal');
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-    }
+    if (!modal) return;
+
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+    clearModalMessage();
 };
 
-function showModalMessage(text, isError = true) {
-    const modalMessage = document.getElementById('modal-message');
-    if (!modalMessage) return;
-    modalMessage.textContent = text;
-    modalMessage.className = `modal__message ${isError ? 'modal__message--error' : 'modal__message--success'}`;
-    modalMessage.style.display = 'block';
-    setTimeout(() => {
-        if (modalMessage) modalMessage.style.display = 'none';
-    }, 4000);
+function bindModalClose() {
+    const modal = document.getElementById('auth-modal');
+    modal?.querySelector('.modal__overlay')?.addEventListener('click', closeAuthModal);
+    modal?.querySelector('.modal__close')?.addEventListener('click', closeAuthModal);
 }
 
-function clearModalMessage() {
-    const modalMessage = document.getElementById('modal-message');
-    if (modalMessage) modalMessage.style.display = 'none';
+function bindFormSwitchers() {
+    const links = [
+        ['to-register-link', 'register'],
+        ['to-login-link', 'login'],
+        ['forgot-link', 'reset'],
+        ['back-to-login-link', 'login'],
+    ];
+
+    links.forEach(([id, form]) => {
+        document.getElementById(id)?.addEventListener('click', event => {
+            event.preventDefault();
+            openAuthModal(form);
+        });
+    });
 }
 
-// ========== ЗАКРЫТИЕ МОДАЛКИ ПО КЛИКУ ==========
-function initModalCloseHandlers() {
-    const overlay = document.querySelector('.modal__overlay');
-    const closeBtn = document.querySelector('.modal__close');
-    
-    if (overlay) {
-        const newOverlay = overlay.cloneNode(true);
-        overlay.parentNode.replaceChild(newOverlay, overlay);
-        newOverlay.addEventListener('click', closeAuthModal);
-    }
-    
-    if (closeBtn) {
-        const newCloseBtn = closeBtn.cloneNode(true);
-        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-        newCloseBtn.addEventListener('click', closeAuthModal);
-    }
-}
-
-// ========== ПЕРЕКЛЮЧЕНИЕ ФОРМ ==========
-function initFormSwitchers() {
-    const toRegister = document.getElementById('to-register-link');
-    const toLogin = document.getElementById('to-login-link');
-    const forgotLink = document.getElementById('forgot-link');
-    const backToLogin = document.getElementById('back-to-login-link');
-    
-    if (toRegister) {
-        const newBtn = toRegister.cloneNode(true);
-        toRegister.parentNode.replaceChild(newBtn, toRegister);
-        newBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openAuthModal('register');
-            clearModalMessage();
-        });
-    }
-    
-    if (toLogin) {
-        const newBtn = toLogin.cloneNode(true);
-        toLogin.parentNode.replaceChild(newBtn, toLogin);
-        newBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openAuthModal('login');
-            clearModalMessage();
-        });
-    }
-    
-    if (forgotLink) {
-        const newBtn = forgotLink.cloneNode(true);
-        forgotLink.parentNode.replaceChild(newBtn, forgotLink);
-        newBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openAuthModal('reset');
-            clearModalMessage();
-        });
-    }
-    
-    if (backToLogin) {
-        const newBtn = backToLogin.cloneNode(true);
-        backToLogin.parentNode.replaceChild(newBtn, backToLogin);
-        newBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openAuthModal('login');
-            clearModalMessage();
-        });
-    }
-}
-
-// ========== РЕГИСТРАЦИЯ (ДЕМО) ==========
-let pendingEmail = null;
-let pendingFullName = null;
-let pendingPassword = null;
-
-function initRegistration() {
-    const registerBtn = document.getElementById('register-btn-action');
-    if (!registerBtn) return;
-    
-    const newBtn = registerBtn.cloneNode(true);
-    registerBtn.parentNode.replaceChild(newBtn, registerBtn);
-    
-    newBtn.addEventListener('click', async () => {
+function bindRegistration() {
+    document.getElementById('register-btn-action')?.addEventListener('click', async () => {
         const name = document.getElementById('reg-name')?.value.trim();
         const surname = document.getElementById('reg-surname')?.value.trim();
-        const fullName = `${name} ${surname}`;
         const email = document.getElementById('reg-email')?.value.trim();
         const password = document.getElementById('reg-password')?.value;
-        const codeGroup = document.getElementById('reg-code-group');
-        const registerBtnEl = document.getElementById('register-btn-action');
 
         if (!name || !surname || !email || !password) {
             showModalMessage('Заполните все поля');
             return;
         }
 
-        if (codeGroup && codeGroup.style.display === 'none') {
-            pendingEmail = email;
-            pendingFullName = fullName;
-            pendingPassword = password;
+        const { data, error } = await authClient.auth.signUp({
+            email,
+            password,
+            options: {
+                data: { full_name: `${name} ${surname}` },
+                emailRedirectTo: new URL('lk.html', window.location.href).href,
+            },
+        });
 
-            codeGroup.style.display = 'flex';
-            if (registerBtnEl) registerBtnEl.textContent = 'Подтвердить регистрацию';
-            showModalMessage(`Демо-режим: используйте любой код (например, 123456)`, false);
-        } else {
-            const code = document.getElementById('reg-confirm-code')?.value;
-            
-            if (!code) {
-                showModalMessage('Введите код подтверждения');
-                return;
-            }
-
-            const userData = {
-                id: 'demo_' + Date.now(),
-                email: pendingEmail,
-                full_name: pendingFullName,
-                created_at: new Date().toISOString()
-            };
-            
-            saveUserToStorage(userData);
-            
-            showModalMessage('Регистрация успешна!', false);
-            
-            setTimeout(() => {
-                openAuthModal('login');
-                const loginEmail = document.getElementById('login-email');
-                const loginPassword = document.getElementById('login-password');
-                if (loginEmail) loginEmail.value = pendingEmail;
-                if (loginPassword) loginPassword.value = pendingPassword;
-                
-                if (codeGroup) codeGroup.style.display = 'none';
-                if (registerBtnEl) registerBtnEl.textContent = 'Зарегистрироваться';
-                const confirmCodeInput = document.getElementById('reg-confirm-code');
-                if (confirmCodeInput) confirmCodeInput.value = '';
-                
-                pendingEmail = null;
-                pendingFullName = null;
-                pendingPassword = null;
-            }, 2000);
+        if (error) {
+            showModalMessage(translateAuthError(error));
+            return;
         }
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+            showModalMessage('Пользователь с такой почтой уже зарегистрирован.');
+            return;
+        }
+
+        showModalMessage('Проверьте почту и подтвердите регистрацию.', false);
     });
 }
 
-// ========== ВХОД (ДЕМО) ==========
-function initLogin() {
-    const loginBtn = document.getElementById('login-btn-action');
-    if (!loginBtn) return;
-    
-    const newBtn = loginBtn.cloneNode(true);
-    loginBtn.parentNode.replaceChild(newBtn, loginBtn);
-    
-    newBtn.addEventListener('click', async () => {
+function bindLogin() {
+    document.getElementById('login-btn-action')?.addEventListener('click', async () => {
         const email = document.getElementById('login-email')?.value.trim();
         const password = document.getElementById('login-password')?.value;
-        
+
         if (!email || !password) {
             showModalMessage('Заполните все поля');
             return;
         }
-        
-        const userData = getUserFromStorage();
-        
-        if (userData && userData.email === email) {
-            showModalMessage('Вход выполнен успешно!', false);
-            setTimeout(() => {
-                closeAuthModal();
-                loadUserProfile();
-                renderPurchases();
-            }, 1500);
-        } else {
-            showModalMessage('Неверная почта или пароль. Зарегистрируйтесь сначала.');
+
+        const { error } = await authClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            showModalMessage('Не удалось войти. Проверьте почту, пароль и подтверждение email.');
+            return;
         }
+
+        closeAuthModal();
+        await loadUserProfile();
+        await window.vmesteAccountOrdersLoad?.();
     });
 }
 
-// ========== ВОССТАНОВЛЕНИЕ ПАРОЛЯ (ДЕМО) ==========
-let resetEmail = null;
+function bindPasswordReset() {
+    document.getElementById('reset-send-code-btn')?.addEventListener('click', async () => {
+        const email = document.getElementById('reset-email')?.value.trim();
+        if (!email) {
+            showModalMessage('Введите email');
+            return;
+        }
 
-function initPasswordReset() {
-    const resetSendBtn = document.getElementById('reset-send-code-btn');
-    const resetVerifyBtn = document.getElementById('reset-verify-code-btn');
-    const setNewPasswordBtn = document.getElementById('set-new-password-btn');
-    
-    if (resetSendBtn) {
-        const newBtn = resetSendBtn.cloneNode(true);
-        resetSendBtn.parentNode.replaceChild(newBtn, resetSendBtn);
-        
-        newBtn.addEventListener('click', async () => {
-            const email = document.getElementById('reset-email')?.value.trim();
-            
-            if (!email) {
-                showModalMessage('Введите email');
-                return;
-            }
-            
-            resetEmail = email;
-            
-            document.getElementById('reset-code-group').style.display = 'flex';
-            newBtn.style.display = 'none';
-            showModalMessage(`Демо-режим: код отправлен на ${email} (используйте любой код)`, false);
+        const { error } = await authClient.auth.resetPasswordForEmail(email, {
+            redirectTo: new URL('lk.html', window.location.href).href,
         });
-    }
-    
-    if (resetVerifyBtn) {
-        const newBtn = resetVerifyBtn.cloneNode(true);
-        resetVerifyBtn.parentNode.replaceChild(newBtn, resetVerifyBtn);
-        
-        newBtn.addEventListener('click', async () => {
-            const code = document.getElementById('reset-confirm-code')?.value;
-            
-            if (!code) {
-                showModalMessage('Введите код подтверждения');
-                return;
-            }
-            
-            showModalMessage('Код подтверждён! Придумайте новый пароль', false);
-            document.getElementById('reset-code-group').style.display = 'none';
-            document.getElementById('new-password-group').style.display = 'flex';
-        });
-    }
-    
-    if (setNewPasswordBtn) {
-        const newBtn = setNewPasswordBtn.cloneNode(true);
-        setNewPasswordBtn.parentNode.replaceChild(newBtn, setNewPasswordBtn);
-        
-        newBtn.addEventListener('click', async () => {
-            const newPassword = document.getElementById('new-password')?.value;
-            const confirmPassword = document.getElementById('confirm-password')?.value;
-            
-            if (!newPassword || !confirmPassword) {
-                showModalMessage('Заполните все поля');
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                showModalMessage('Пароли не совпадают');
-                return;
-            }
-            
-            showModalMessage('Пароль успешно изменён!', false);
-            setTimeout(() => {
-                openAuthModal('login');
-                const resetEmailInput = document.getElementById('reset-email');
-                const resetCodeInput = document.getElementById('reset-confirm-code');
-                const newPasswordInput = document.getElementById('new-password');
-                const confirmPasswordInput = document.getElementById('confirm-password');
-                if (resetEmailInput) resetEmailInput.value = '';
-                if (resetCodeInput) resetCodeInput.value = '';
-                if (newPasswordInput) newPasswordInput.value = '';
-                if (confirmPasswordInput) confirmPasswordInput.value = '';
-            }, 2000);
-        });
-    }
+
+        if (error) {
+            showModalMessage(translateAuthError(error));
+            return;
+        }
+
+        showModalMessage('Ссылка для восстановления отправлена на почту.', false);
+    });
+
+    document.getElementById('set-new-password-btn')?.addEventListener('click', async () => {
+        const password = document.getElementById('new-password')?.value;
+        const confirmation = document.getElementById('confirm-password')?.value;
+
+        if (!password || !confirmation) {
+            showModalMessage('Заполните оба поля');
+            return;
+        }
+        if (password !== confirmation) {
+            showModalMessage('Пароли не совпадают');
+            return;
+        }
+
+        const { error } = await authClient.auth.updateUser({ password });
+        if (error) {
+            showModalMessage(translateAuthError(error));
+            return;
+        }
+
+        showModalMessage('Пароль изменён. Теперь можно войти.', false);
+        setTimeout(() => openAuthModal('login'), 1200);
+    });
 }
 
-// ========== ЗАГРУЗКА ПРОФИЛЯ И КОНТРОЛЬ АВТОРИЗАЦИИ ==========
-function loadUserProfile() {
-    const userData = getUserFromStorage();
-    const isLkPage = window.location.pathname.includes('lk.html');
-    
-    if (userData) {
-        console.log('✅ Загружен пользователь:', userData.email);
-        
-        const fullName = userData.full_name || '';
-        const nameParts = fullName.split(' ');
-        
-        const nameEl = document.getElementById('profile-name');
-        const surnameEl = document.getElementById('profile-surname');
-        
-        if (nameEl) nameEl.textContent = nameParts[0] || 'Гость';
-        if (surnameEl) surnameEl.textContent = nameParts[1] || '';
-        
-        return true;
-    } else {
-        console.log('❌ Пользователь не авторизован');
-        
-        const nameEl = document.getElementById('profile-name');
-        const surnameEl = document.getElementById('profile-surname');
-        
-        if (nameEl) nameEl.textContent = 'Не авторизован';
-        if (surnameEl) surnameEl.textContent = '';
-        
-        if (isLkPage) {
-            setTimeout(() => {
-                openAuthModal('login');
-            }, 100);
-        }
-        
+async function getCurrentUser() {
+    const { data, error } = await authClient.auth.getUser();
+    if (error) return null;
+    return data.user;
+}
+
+function renderUserProfile(profile) {
+    const nameElement = document.getElementById('profile-name');
+    const surnameElement = document.getElementById('profile-surname');
+    const avatarElement = document.querySelector('.user-card__img');
+    const adminLink = document.getElementById('admin-panel-link');
+    const [name = 'Гость', ...surnameParts] = (profile?.fullName || '').split(' ').filter(Boolean);
+
+    if (nameElement && nameElement.textContent !== name) nameElement.textContent = name;
+    if (surnameElement && surnameElement.textContent !== surnameParts.join(' ')) {
+        surnameElement.textContent = surnameParts.join(' ');
+    }
+    if (avatarElement && avatarElement.getAttribute('src') !== (profile?.avatarUrl || DEFAULT_PROFILE_AVATAR)) {
+        avatarElement.src = profile?.avatarUrl || DEFAULT_PROFILE_AVATAR;
+    }
+    if (adminLink) adminLink.hidden = !profile?.isAdmin;
+}
+
+function renderCachedUserProfile() {
+    const userId = window.vmesteCache?.currentUserId();
+    const cached = window.vmesteCache?.read(`profile:${userId}`);
+    if (!userId || !cached) return false;
+    renderUserProfile(cached);
+    return true;
+}
+
+async function loadUserProfile() {
+    renderCachedUserProfile();
+    const user = await getCurrentUser();
+    const nameElement = document.getElementById('profile-name');
+    const surnameElement = document.getElementById('profile-surname');
+
+    if (!user) {
+        if (nameElement) nameElement.textContent = 'Не авторизован';
+        if (surnameElement) surnameElement.textContent = '';
         return false;
     }
+
+    const { data: profile } = await authClient
+        .from('profiles')
+        .select('full_name, avatar_url, is_admin')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    const fullName = profile?.full_name || user.user_metadata?.full_name || '';
+    const cachedProfile = {
+        fullName,
+        avatarUrl: profile?.avatar_url || DEFAULT_PROFILE_AVATAR,
+        isAdmin: Boolean(profile?.is_admin),
+    };
+    if (window.vmesteCache?.write(`profile:${user.id}`, cachedProfile)) {
+        renderUserProfile(cachedProfile);
+    } else if (!renderCachedUserProfile()) {
+        renderUserProfile(cachedProfile);
+    }
+    return true;
 }
 
-// ========== ВЫХОД ==========
-window.logout = function() {
-    clearUserFromStorage();
-    showModalMessage('Вы вышли из аккаунта', false);
-    setTimeout(() => {
-        window.location.reload();
-    }, 1000);
+window.logout = async function() {
+    const userId = window.vmesteCache?.currentUserId();
+    window.vmesteCache?.remove(`profile:${userId}`);
+    window.vmesteCache?.remove(`orders:${userId}`);
+    await authClient.auth.signOut();
+    window.location.reload();
 };
 
-// ========== ГЕНЕРАЦИЯ КАРТОЧЕК ПОКУПОК ==========
-const DEMO_PURCHASES = [
-    {
-        id: 1,
-        image: "media/майка.png",
-        name: "майка равный круг",
-        status: "Статус: Можно забирать",
-        isPast: false
-    },
-    {
-        id: 2,
-        image: "media/сумка.png",
-        name: "сумка-шоппер",
-        status: "Статус: В пути",
-        isPast: false
-    },
-    {
-        id: 3,
-        image: "media/Rectaввв3.png",
-        name: "брелок",
-        status: "Статус: Доставлен",
-        isPast: true
+function showSettingsMessage(text, isError = true) {
+    const message = document.getElementById('profile-settings-message');
+    if (!message) return;
+
+    message.textContent = text;
+    message.className = `modal__message ${isError ? 'modal__message--error' : 'modal__message--success'}`;
+    message.style.display = 'block';
+}
+
+function clearSettingsMessage() {
+    const message = document.getElementById('profile-settings-message');
+    if (message) message.style.display = 'none';
+}
+
+function closeProfileSettings() {
+    const modal = document.getElementById('profile-settings-modal');
+    if (!modal) return;
+
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+    clearSettingsMessage();
+}
+
+async function openProfileSettings() {
+    const modal = document.getElementById('profile-settings-modal');
+    const user = await getCurrentUser();
+    if (!modal || !user) return;
+
+    clearSettingsMessage();
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    const { data: profile, error } = await authClient
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    if (error) {
+        showSettingsMessage('Не удалось загрузить настройки профиля.');
+        return;
     }
-];
 
-let currentFilter = 'all';
+    const [name = '', ...surnameParts] = (profile?.full_name || '').split(' ').filter(Boolean);
+    document.getElementById('settings-name').value = name;
+    document.getElementById('settings-surname').value = surnameParts.join(' ');
+    document.getElementById('settings-email').value = user.email || '';
+    const preview = document.getElementById('settings-avatar-preview');
+    const fileInput = document.getElementById('settings-avatar-file');
+    if (preview) preview.src = profile?.avatar_url || DEFAULT_PROFILE_AVATAR;
+    if (fileInput) fileInput.value = '';
+    selectedAvatarFile = null;
+    removeAvatarRequested = false;
 
-function renderPurchases() {
+}
+
+function avatarFileExtension(file) {
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    if (extension && /^[a-z0-9]+$/.test(extension)) return extension;
+
+    const extensions = {
+        'image/jpeg': 'jpg',
+        'image/png': 'png',
+        'image/webp': 'webp',
+        'image/avif': 'avif',
+    };
+    return extensions[file.type] || 'img';
+}
+
+function selectAvatarFile(file) {
+    if (!file) return;
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+        showSettingsMessage('Выберите изображение в формате PNG, JPG, WEBP или AVIF.');
+        return;
+    }
+    if (file.size > MAX_AVATAR_SIZE) {
+        showSettingsMessage('Размер изображения не должен превышать 5 МБ.');
+        return;
+    }
+
+    selectedAvatarFile = file;
+    removeAvatarRequested = false;
+    clearSettingsMessage();
+
+    const preview = document.getElementById('settings-avatar-preview');
+    if (preview) preview.src = URL.createObjectURL(file);
+}
+
+async function uploadProfileAvatar(user) {
+    if (!selectedAvatarFile) return null;
+
+    setSaveProfileStatus('Подготавливаем фото...');
+    const avatarFile = await prepareAvatarFile(selectedAvatarFile);
+    const filePath = `${user.id}/avatar.${avatarFileExtension(avatarFile)}`;
+
+    setSaveProfileStatus('Загружаем фото...');
+    const { error } = await withTimeout(
+        authClient.storage
+            .from('avatars')
+            .upload(filePath, avatarFile, {
+                cacheControl: '3600',
+                upsert: true,
+            })
+    );
+
+    if (error) throw error;
+
+    const { data } = authClient.storage.from('avatars').getPublicUrl(filePath);
+    return `${data.publicUrl}?v=${Date.now()}`;
+}
+
+async function prepareAvatarFile(file) {
+    const image = await createImageBitmap(file);
+    const scale = Math.min(1, AVATAR_MAX_SIDE / Math.max(image.width, image.height));
+    const width = Math.max(1, Math.round(image.width * scale));
+    const height = Math.max(1, Math.round(image.height * scale));
+    const canvas = document.createElement('canvas');
+
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+    image.close();
+
+    const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(result => {
+            if (result) resolve(result);
+            else reject(new Error('avatar-conversion-failed'));
+        }, 'image/webp', 0.82);
+    });
+
+    return new File([blob], 'avatar.webp', { type: 'image/webp' });
+}
+
+async function saveProfileSettings() {
+    const saveButton = document.getElementById('save-profile-settings');
+    const saveButtonText = saveButton?.querySelector('.modal__btn-text');
+    const user = await getCurrentUser();
+    const name = document.getElementById('settings-name')?.value.trim();
+    const surname = document.getElementById('settings-surname')?.value.trim();
+
+    if (!user) return;
+    if (!name || !surname) {
+        showSettingsMessage('Укажите имя и фамилию.');
+        return;
+    }
+
+    if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.classList.add('loading');
+    }
+    if (saveButtonText) saveButtonText.textContent = selectedAvatarFile
+        ? 'Подготавливаем фото...'
+        : 'Сохраняем профиль...';
+    clearSettingsMessage();
+
+    const fullName = `${name} ${surname}`;
+    let avatarUrl;
+
+    try {
+        avatarUrl = removeAvatarRequested ? null : await uploadProfileAvatar(user);
+    } catch {
+        showSettingsMessage('Не удалось загрузить фотографию. Попробуйте ещё раз.');
+        return resetSaveProfileButton();
+    }
+
+    const profilePatch = { full_name: fullName };
+    if (removeAvatarRequested || avatarUrl) profilePatch.avatar_url = avatarUrl;
+
+    setSaveProfileStatus('Сохраняем профиль...');
+    let error;
+    try {
+        ({ error } = await withTimeout(
+            authClient
+                .from('profiles')
+                .update(profilePatch)
+                .eq('id', user.id)
+        ));
+    } catch {
+        showSettingsMessage('Сохранение заняло слишком много времени. Попробуйте ещё раз.');
+        return resetSaveProfileButton();
+    }
+
+    if (error) {
+        showSettingsMessage('Не удалось сохранить изменения.');
+        return resetSaveProfileButton();
+    }
+
+    const nameElement = document.getElementById('profile-name');
+    const surnameElement = document.getElementById('profile-surname');
+    const avatarElement = document.querySelector('.user-card__img');
+
+    if (nameElement) nameElement.textContent = name;
+    if (surnameElement) surnameElement.textContent = surname;
+    if (avatarElement && (removeAvatarRequested || avatarUrl)) {
+        avatarElement.src = avatarUrl || DEFAULT_PROFILE_AVATAR;
+    }
+    const existingProfile = window.vmesteCache?.read(`profile:${user.id}`, {});
+    window.vmesteCache?.write(`profile:${user.id}`, {
+        ...existingProfile,
+        fullName,
+        avatarUrl: removeAvatarRequested
+            ? DEFAULT_PROFILE_AVATAR
+            : avatarUrl || existingProfile.avatarUrl || DEFAULT_PROFILE_AVATAR,
+    });
+
+    selectedAvatarFile = null;
+    removeAvatarRequested = false;
+    showSettingsMessage('Изменения сохранены.', false);
+    resetSaveProfileButton();
+}
+
+function resetSaveProfileButton() {
+    const saveButton = document.getElementById('save-profile-settings');
+    const saveButtonText = saveButton?.querySelector('.modal__btn-text');
+
+    if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.classList.remove('loading');
+    }
+    if (saveButtonText) saveButtonText.textContent = 'Сохранить изменения';
+}
+
+function bindProfileSettings() {
+    const modal = document.getElementById('profile-settings-modal');
+    const dropZone = document.getElementById('avatar-drop-zone');
+
+    document.getElementById('profile-settings-btn')?.addEventListener('click', openProfileSettings);
+    document.getElementById('save-profile-settings')?.addEventListener('click', saveProfileSettings);
+    document.getElementById('settings-logout')?.addEventListener('click', window.logout);
+    document.getElementById('settings-avatar-file')?.addEventListener('change', event => {
+        selectAvatarFile(event.target.files?.[0]);
+    });
+    document.getElementById('remove-profile-avatar')?.addEventListener('click', () => {
+        selectedAvatarFile = null;
+        removeAvatarRequested = true;
+        document.getElementById('settings-avatar-file').value = '';
+        document.getElementById('settings-avatar-preview').src = DEFAULT_PROFILE_AVATAR;
+        clearSettingsMessage();
+    });
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone?.addEventListener(eventName, event => {
+            event.preventDefault();
+            dropZone.classList.add('dragging');
+        });
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone?.addEventListener(eventName, event => {
+            event.preventDefault();
+            dropZone.classList.remove('dragging');
+        });
+    });
+    dropZone?.addEventListener('drop', event => {
+        selectAvatarFile(event.dataTransfer?.files?.[0]);
+    });
+    modal?.querySelector('.modal__overlay')?.addEventListener('click', closeProfileSettings);
+    modal?.querySelector('.modal__close')?.addEventListener('click', closeProfileSettings);
+}
+
+async function renderPurchases() {
     const container = document.getElementById('cardsContainer');
     if (!container) return;
-    
-    const userData = getUserFromStorage();
-    
-    // Если пользователь не авторизован — показываем кнопку входа
-    if (!userData) {
+
+    const user = await getCurrentUser();
+    if (!user) {
         container.innerHTML = `
-            <div class="empty-state" style="text-align: center; padding: 60px; grid-column: 6 / -1;">
-                <p style="font-family: var(--font-primary); font-size: 18px; color: var(--black); margin-bottom: 24px;">
+            <div class="empty-state" style="text-align:center;padding:60px;grid-column:6 / -1;">
+                <p style="font-family:var(--font-primary);font-size:18px;color:var(--black);margin-bottom:24px;">
                     Войдите в аккаунт, чтобы увидеть покупки
                 </p>
-                <button class="btn btn--primary" id="open-auth-from-empty" style="background: var(--blue);">
+                <button class="btn btn--primary" id="open-auth-from-empty" style="background:var(--blue);">
                     Войти в аккаунт
                 </button>
             </div>
         `;
-        
-        const openAuthBtn = document.getElementById('open-auth-from-empty');
-        if (openAuthBtn) {
-            openAuthBtn.addEventListener('click', () => {
-                openAuthModal('login');
-            });
+        document.getElementById('open-auth-from-empty')?.addEventListener('click', () => {
+            openAuthModal('login');
+        });
+        return;
+    }
+
+    await window.vmesteAccountOrdersLoad?.();
+}
+
+async function init() {
+    if (!authClient) {
+        console.error('[auth] Supabase client is not available');
+        return;
+    }
+
+    bindModalClose();
+    bindFormSwitchers();
+    bindRegistration();
+    bindLogin();
+    bindPasswordReset();
+    bindProfileSettings();
+
+    authClient.auth.onAuthStateChange(event => {
+        if (event === 'PASSWORD_RECOVERY') {
+            openAuthModal('reset');
+            setResetPasswordMode(true);
+            showModalMessage('Введите новый пароль.', false);
         }
-        return;
-    }
-    
-    const filtered = currentFilter === 'all' 
-        ? DEMO_PURCHASES 
-        : DEMO_PURCHASES.filter(p => p.isPast);
-    
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state" style="text-align: center; padding: 60px; color: var(--black);">Нет покупок</div>';
-        return;
-    }
-    
-    const cardsToShow = filtered.slice(0, 2);
-    
-    container.innerHTML = cardsToShow.map(purchase => `
-        <div class="pokupka_card" data-id="${purchase.id}">
-            <img class="pokupka__img" src="${purchase.image}" alt="${purchase.name}">
-            <div class="product_name"><h3>${purchase.name}</h3></div>
-            <div class="status">${purchase.status}</div>
-            <div class="knopki">
-                <button class="btn btn--secondary">открыть qr-код</button>
-                <button class="btn btn--linkzak">отменить заказ</button>
-            </div>
-        </div>
-    `).join('');
-    
-    document.querySelectorAll('.btn--secondary').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const card = e.target.closest('.pokupka_card');
-            const id = card?.dataset.id;
-            alert(`QR-код для заказа #${id} (демо-режим)`);
-        });
     });
-    
-    document.querySelectorAll('.btn--linkzak').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const card = e.target.closest('.pokupka_card');
-            const id = card?.dataset.id;
-            if (confirm(`Отменить заказ #${id}?`)) {
-                card?.remove();
-            }
-        });
-    });
-}
 
-function initFilters() {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.filter;
-            renderPurchases();
-        });
-    });
-}
+    const loggedIn = await loadUserProfile();
+    await renderPurchases();
 
-// ========== ИНИЦИАЛИЗАЦИЯ ВСЕГО ==========
-function init() {
-    console.log('🚀 Инициализация auth-modal.js');
-    
-    initModalCloseHandlers();
-    initFormSwitchers();
-    initRegistration();
-    initLogin();
-    initPasswordReset();
-    initFilters();
-    
-    loadUserProfile();
-    renderPurchases();
-    
-    console.log('✅ Демо-версия auth-modal.js загружена');
+    if (!loggedIn && window.location.pathname.includes('lk.html')) {
+        setTimeout(() => openAuthModal('login'), 100);
+    }
 }
 
 if (document.readyState === 'loading') {
@@ -518,5 +616,6 @@ if (document.readyState === 'loading') {
     init();
 }
 
-window.isLoggedIn = isLoggedIn;
-window.getUserFromStorage = getUserFromStorage;
+window.isLoggedIn = async function() {
+    return Boolean(await getCurrentUser());
+};

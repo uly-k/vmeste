@@ -90,6 +90,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  cursor: pointer;
 
   /* анимация появления */
   opacity: 0;
@@ -105,6 +106,11 @@
 
 .shop-card:hover {
   box-shadow: 0 8px 32px rgba(0, 119, 255, 0.10);
+}
+
+.shop-card__link {
+  color: inherit;
+  text-decoration: none;
 }
 
 /* ── ФОТО ── */
@@ -140,11 +146,17 @@
 }
 
 .shop-card__name {
+  display: block;
   font-family: var(--font-primary);
   font-size: var(--h3);
   font-weight: var(--font-weight);
   line-height: var(--lh-100);
   color: var(--black);
+  text-decoration: none;
+}
+
+.shop-card__name:hover {
+  color: var(--blue);
 }
 
 .shop-card__meta {

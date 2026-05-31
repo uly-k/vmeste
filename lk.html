@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="media/лого.png">
+  <link rel="apple-touch-icon" href="media/лого.png">
+  <script src="js/local-cache.js"></script>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -81,17 +84,17 @@
         <h3 id="bt">личный кабинет</h3>
         
         <div class="user-card">
-          <img class="user-card__img" src="media/photolk.png" alt="фотография пользователя">
+          <img class="user-card__img" src="media/profile-placeholder.svg" alt="фотография пользователя">
           <div class="blk">
-            <button class="b_sett" onclick="window.logout()">
+            <button class="b_sett" id="profile-settings-btn" type="button" aria-label="Настройки профиля">
               <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
                 <path d="M15 10C14.0111 10 13.0444 10.2933 12.2222 10.8426C11.3999 11.3921 10.759 12.173 10.3806 13.0866C10.0022 14.0002 9.90315 15.0055 10.0961 15.9755C10.289 16.9454 10.7652 17.8363 11.4645 18.5355C12.1637 19.2347 13.0546 19.711 14.0245 19.9039C14.9945 20.0969 15.9998 19.9979 16.9134 19.6194C17.827 19.241 18.608 18.6001 19.1574 17.7779C19.7068 16.9556 20 15.9889 20 15C20 13.6739 19.4732 12.4022 18.5355 11.4645C17.5979 10.5268 16.3261 10 15 10ZM15 17.5C14.5055 17.5 14.0223 17.3534 13.6111 17.0786C13.2 16.804 12.8795 16.4135 12.6902 15.9567C12.5011 15.4999 12.4516 14.9973 12.548 14.5123C12.6445 14.0274 12.8826 13.5819 13.2323 13.2323C13.5819 12.8826 14.0274 12.6445 14.5123 12.548C14.9973 12.4516 15.4999 12.5011 15.9567 12.6902C16.4135 12.8795 16.804 13.2 17.0786 13.6111C17.3534 14.0223 17.5 14.5055 17.5 15C17.5 15.663 17.2366 16.2989 16.7677 16.7677C16.2989 17.2366 15.663 17.5 15 17.5Z" fill="white"/>
               </svg>
             </button>
           </div>
           <div id="name_sur">
-            <h3 id="profile-name">Анна</h3>
-            <h3 id="profile-surname">Смирнова</h3>
+            <h3 id="profile-name">Загрузка...</h3>
+            <h3 id="profile-surname"></h3>
           </div>
         </div>
       </div>
@@ -102,6 +105,7 @@
       <div class="lk-right-header">
         <h3 >посещения и покупки</h3>
         <div class="filter-buttons">
+          <a class="admin-panel-link" id="admin-panel-link" href="admin.html" hidden>CRM</a>
           <button class="filter-btn active" data-filter="all">все</button>
           <button class="filter-btn" data-filter="past">прошедшие</button>
         </div>
@@ -241,11 +245,82 @@
     </div>
   </div>
 
+  <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК ПРОФИЛЯ -->
+  <div id="profile-settings-modal" class="modal" style="display: none;">
+    <div class="modal__overlay"></div>
+    <div class="modal__container">
+      <button class="modal__close" type="button" aria-label="Закрыть настройки">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="modal__fields">
+        <h2 class="modal__title">Настройки профиля</h2>
+        <div class="input-group">
+          <label class="modal__label" for="settings-name">Имя</label>
+          <input type="text" id="settings-name" class="modal__input" autocomplete="given-name">
+        </div>
+        <div class="input-group">
+          <label class="modal__label" for="settings-surname">Фамилия</label>
+          <input type="text" id="settings-surname" class="modal__input" autocomplete="family-name">
+        </div>
+        <div class="input-group">
+          <label class="modal__label" for="settings-email">Электронная почта</label>
+          <input type="email" id="settings-email" class="modal__input" readonly>
+        </div>
+        <div class="input-group">
+          <span class="modal__label">Фотография профиля</span>
+          <img class="avatar-upload__preview" id="settings-avatar-preview"
+               src="media/profile-placeholder.svg" alt="Предпросмотр фотографии">
+          <label class="avatar-upload" id="avatar-drop-zone" for="settings-avatar-file">
+            <span class="avatar-upload__text">
+              Перетащите изображение сюда или <span>выберите файл</span>
+            </span>
+            <span class="avatar-upload__note">PNG, JPG, WEBP или AVIF до 5 МБ. Большое фото автоматически уменьшим.</span>
+          </label>
+          <input type="file" id="settings-avatar-file" class="visually-hidden"
+                 accept="image/png,image/jpeg,image/webp,image/avif">
+          <button id="remove-profile-avatar" class="modal__link avatar-upload__remove"
+                  type="button">Удалить фотографию</button>
+        </div>
+        <button id="save-profile-settings" class="modal__btn" type="button">
+          <span class="modal__btn-spinner" aria-hidden="true"></span>
+          <span class="modal__btn-text">Сохранить изменения</span>
+        </button>
+        <button id="settings-logout" class="modal__btn modal__btn--logout" type="button">Выйти из аккаунта</button>
+      </div>
+
+      <div id="profile-settings-message" class="modal__message"></div>
+    </div>
+  </div>
+
+  <div class="order-cancel-modal" id="orderCancelModal" hidden>
+    <button class="order-cancel-modal__overlay" type="button" data-cancel-close aria-label="Закрыть"></button>
+    <section class="order-cancel-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="orderCancelTitle">
+      <button class="order-cancel-modal__close" type="button" data-cancel-close aria-label="Закрыть">×</button>
+      <p class="order-cancel-modal__eyebrow">отмена заказа</p>
+      <h2 id="orderCancelTitle">точно отменить заказ?</h2>
+      <p>Товары вернутся в наличие. Отменить действие после подтверждения будет нельзя.</p>
+      <div class="order-cancel-modal__message" id="orderCancelMessage"></div>
+      <div class="order-cancel-modal__actions">
+        <button class="order-cancel-modal__secondary" type="button" data-cancel-close>оставить заказ</button>
+        <button class="order-cancel-modal__danger" id="orderCancelConfirm" type="button">отменить заказ</button>
+      </div>
+    </section>
+  </div>
+
   <script src="js/burger.js"></script>
   <script src="js/up.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/cart.js"></script>
   <script src="js/auth-modal.js"></script>
+  <script src="js/account-orders.js"></script>
 
 </body>
 </html>
+
 
 

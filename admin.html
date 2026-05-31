@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="media/лого.png">
+  <link rel="apple-touch-icon" href="media/лого.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base/reset.css">
+  <link rel="stylesheet" href="styles/base/variables.css">
+  <link rel="stylesheet" href="styles/pages/admin.css">
+  <title>CRM — (в)месте</title>
+</head>
+<body>
+  <main class="crm">
+    <header class="crm-header">
+      <div>
+        <a class="crm-back" href="lk.html">← вернуться на сайт</a>
+        <h1>CRM (в)месте</h1>
+        <p>Панель обработки заказов интернет-магазина</p>
+      </div>
+      <button class="crm-logout" id="crmLogout" type="button">выйти из аккаунта</button>
+    </header>
+
+    <section class="crm-state" id="crmState">проверяем доступ...</section>
+
+    <section class="crm-content" id="crmContent" hidden>
+      <div class="crm-metrics" id="crmMetrics"></div>
+      <div class="crm-toolbar">
+        <label for="crmStatus">фильтр по статусу</label>
+        <select id="crmStatus">
+          <option value="all">все</option>
+          <option value="pending">заказ принят</option>
+          <option value="processing">собираем заказ</option>
+          <option value="ready">можно забирать</option>
+          <option value="completed">заказ выдан</option>
+          <option value="cancelled">заказ отменен</option>
+        </select>
+        <button id="crmRefresh" type="button">обновить</button>
+      </div>
+      <div class="crm-orders" id="crmOrders"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

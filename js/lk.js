@@ -4,8 +4,8 @@
    ===================================================== */
 
 /* ── SUPABASE CONFIG ── */
-const LK_URL  = 'https://YOUR_PROJECT_ID.supabase.co';
-const LK_ANON = 'YOUR_ANON_KEY';
+const LK_URL = window.vmesteSupabaseConfig.url;
+const LK_KEY = window.vmesteSupabaseConfig.publishableKey;
 
 /*
   Таблицы которые используются:
@@ -22,7 +22,7 @@ const LK_ANON = 'YOUR_ANON_KEY';
 async function lkFetch(path, token) {
   const res = await fetch(`${LK_URL}/rest/v1/${path}`, {
     headers: {
-      'apikey':        LK_ANON,
+      'apikey':        LK_KEY,
       'Authorization': `Bearer ${token}`,
       'Content-Type':  'application/json',
     },
@@ -35,7 +35,7 @@ async function lkPost(path, body, token) {
   const res = await fetch(`${LK_URL}/rest/v1/${path}`, {
     method: 'POST',
     headers: {
-      'apikey':        LK_ANON,
+      'apikey':        LK_KEY,
       'Authorization': `Bearer ${token}`,
       'Content-Type':  'application/json',
       'Prefer':        'return=representation',
@@ -50,7 +50,7 @@ async function lkPatch(path, body, token) {
   const res = await fetch(`${LK_URL}/rest/v1/${path}`, {
     method: 'PATCH',
     headers: {
-      'apikey':        LK_ANON,
+      'apikey':        LK_KEY,
       'Authorization': `Bearer ${token}`,
       'Content-Type':  'application/json',
       'Prefer':        'return=representation',
@@ -81,7 +81,7 @@ async function getSession() {
 async function signOut() {
   await fetch(`${LK_URL}/auth/v1/logout`, {
     method: 'POST',
-    headers: { 'apikey': LK_ANON, 'Authorization': `Bearer ${(await getSession())?.access_token}` },
+    headers: { 'apikey': LK_KEY, 'Authorization': `Bearer ${(await getSession())?.access_token}` },
   });
   /* Чистим все sb- ключи */
   Object.keys(localStorage).filter(k => k.startsWith('sb-')).forEach(k => localStorage.removeItem(k));
