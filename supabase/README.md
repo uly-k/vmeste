@@ -32,6 +32,32 @@ where id = (
     pickup selection and stable product images to order history.
 12. Run `migrations/20260531213000_order_status_workflow.sql` to enable safe
     customer cancellation and controlled CRM status transitions.
+13. For faster catalog/search/order queries, run this SQL block in `SQL Editor`:
+
+```sql
+create extension if not exists pg_trgm;
+
+create index if not exists products_published_name_idx
+  on public.products (name)
+  where is_published = true;
+
+create index if not exists products_published_name_trgm_idx
+  on public.products using gin (name gin_trgm_ops)
+  where is_published = true;
+
+create index if not exists product_variants_visible_sizes_idx
+  on public.product_variants (product_id, sort_order, size)
+  where stock_quantity > 0;
+
+create index if not exists product_images_primary_image_idx
+  on public.product_images (product_id, sort_order, created_at);
+
+create index if not exists orders_user_created_idx
+  on public.orders (user_id, created_at desc);
+
+create index if not exists orders_status_created_idx
+  on public.orders (status, created_at desc);
+```
 
 The CRM is available at `admin.html`. Its browser UI is not a security
 boundary: access is enforced by Postgres RLS and the `is_admin()` function.

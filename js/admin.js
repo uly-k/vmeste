@@ -106,12 +106,13 @@ function crmRenderMetrics(orders) {
 }
 
 function crmItemHTML(item) {
-  const imageUrl = window.vmesteProductImageUrl?.(item.product_image_path)
+  const imageUrl = window.vmesteProductImageUrl?.(item.product_image_path, 'thumb')
     || 'media/profile-placeholder.svg';
 
   return `
     <li class="crm-order-item">
-      <img src="${crmEscape(imageUrl)}" alt="${crmEscape(item.product_name)}">
+      <img src="${crmEscape(imageUrl)}" alt="${crmEscape(item.product_name)}" loading="lazy" decoding="async"
+           ${item.product_image_path ? `data-vmeste-original-image="${crmEscape(item.product_image_path)}"` : ''}>
       <div>
         <strong>${crmEscape(item.product_name)}</strong>
         <span>размер: ${crmEscape(item.variant_size || 'без размера')}</span>

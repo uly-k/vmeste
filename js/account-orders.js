@@ -4,6 +4,10 @@ const accountOrdersFilters = document.querySelectorAll('.filter-btn');
 let accountOrders = [];
 let accountOrdersFilter = 'all';
 let pendingCancelOrderId = null;
+let accountOrdersLoadPromise = null;
+let accountOrdersLoadedUserId = null;
+let accountOrdersLoadedAt = 0;
+const ACCOUNT_ORDERS_CACHE_TTL = 15000;
 
 const accountOrderStatuses = {
   pending: {
@@ -53,13 +57,14 @@ function accountOrdersDate(value) {
 }
 
 function accountOrderItemHTML(item) {
-  const imageUrl = window.vmesteProductImageUrl?.(item.product_image_path)
+  const imageUrl = window.vmesteProductImageUrl?.(item.product_image_path, 'order')
     || 'media/profile-placeholder.svg';
 
   return `
     <li class="account-order-item">
       <img class="account-order-item__image" src="${accountOrdersEscape(imageUrl)}"
-           alt="${accountOrdersEscape(item.product_name)}">
+           alt="${accountOrdersEscape(item.product_name)}" loading="lazy" decoding="async"
+           ${item.product_image_path ? `data-vmeste-original-image="${accountOrdersEscape(item.product_image_path)}"` : ''}>
       <div class="account-order-item__body">
         <strong>${accountOrdersEscape(item.product_name)}</strong>
         <span>размер: ${accountOrdersEscape(item.variant_size || 'без размера')}</span>
@@ -106,7 +111,16 @@ function accountOrdersHTML(order) {
   `;
 }
 
-async function accountOrdersLoad() {
+function accountOrdersLoad(options = {}) {
+  if (accountOrdersLoadPromise) return accountOrdersLoadPromise;
+  accountOrdersLoadPromise = accountOrdersLoadInner(options)
+    .finally(() => {
+      accountOrdersLoadPromise = null;
+    });
+  return accountOrdersLoadPromise;
+}
+
+async function accountOrdersLoadInner({ force = false } = {}) {
   if (!accountOrdersClient || !accountOrdersContainer) return;
 
   const cachedUserId = window.vmesteCache?.currentUserId();
@@ -126,6 +140,12 @@ async function accountOrdersLoad() {
     return;
   }
 
+  if (!force
+      && accountOrdersLoadedUserId === user.id
+      && Date.now() - accountOrdersLoadedAt < ACCOUNT_ORDERS_CACHE_TTL) {
+    return accountOrders;
+  }
+
   if (!hasCachedOrders || cachedUserId !== user.id) {
     accountOrdersContainer.innerHTML = '<p class="lk-state-msg">Загружаем заказы...</p>';
   }
@@ -142,7 +162,10 @@ async function accountOrdersLoad() {
 
   const changed = window.vmesteCache?.write(`orders:${user.id}`, orders);
   accountOrders = orders;
+  accountOrdersLoadedUserId = user.id;
+  accountOrdersLoadedAt = Date.now();
   if (changed || !hasCachedOrders || cachedUserId !== user.id) accountOrdersRender();
+  return accountOrders;
 }
 
 function accountOrdersRender() {
@@ -214,7 +237,9 @@ document.getElementById('orderCancelConfirm')?.addEventListener('click', async e
   accountOrdersCloseCancelModal();
   button.disabled = false;
   button.textContent = 'отменить заказ';
-  await accountOrdersLoad();
+  const userId = window.vmesteCache?.currentUserId();
+  if (userId) window.vmesteCache?.remove(`orders:${userId}`);
+  await accountOrdersLoad({ force: true });
 });
 
 accountOrdersFilters.forEach(button => {

@@ -256,12 +256,16 @@ class PersonalCabinet {
     const card = document.createElement('div');
     card.className = `order-card${item.isPast ? ' past-event' : ''}`;
     card.dataset.orderId = item.orderId;
+    const imageUrl = window.vmesteProductImageUrl?.(p.image_url, 'order') || p.image_url || 'media/prof.png';
+    const imageOriginalAttr = p.image_url
+      ? ` data-vmeste-original-image="${String(p.image_url).replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"`
+      : '';
 
     card.innerHTML = `
       <img class="order-card__img"
-           src="${p.image_url || 'media/prof.png'}"
-           alt="${p.name || 'товар'}"
-           loading="lazy" />
+           src="${String(imageUrl).replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"
+           alt="${String(p.name || 'товар').replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"
+           loading="lazy" decoding="async"${imageOriginalAttr} />
       <div class="order-card__content">
         <div>
           <p class="order-card__title">${p.name || '—'}</p>

@@ -10,7 +10,7 @@ function cartEscape(value) {
 }
 
 function cartImageUrl(path) {
-  return window.vmesteProductImageUrl?.(path) || path || 'media/profile-placeholder.svg';
+  return window.vmesteProductImageUrl?.(path, 'order') || path || 'media/profile-placeholder.svg';
 }
 
 function cartMoney(value) {
@@ -34,7 +34,8 @@ function cartItemHTML(item) {
              data-size="${cartEscape(item.size || '')}">
       <a class="cart-item__image-wrap" href="product.html?slug=${encodeURIComponent(item.slug)}">
         <img class="cart-item__image" src="${cartEscape(cartImageUrl(item.imageUrl))}"
-             alt="${cartEscape(item.name)}">
+             alt="${cartEscape(item.name)}" loading="lazy" decoding="async"
+             ${item.imageUrl ? `data-vmeste-original-image="${cartEscape(item.imageUrl)}"` : ''}>
       </a>
       <div class="cart-item__content">
         <div>

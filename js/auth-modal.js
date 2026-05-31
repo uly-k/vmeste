@@ -228,9 +228,9 @@ function bindPasswordReset() {
 }
 
 async function getCurrentUser() {
-    const { data, error } = await authClient.auth.getUser();
+    const { data, error } = await authClient.auth.getSession();
     if (error) return null;
-    return data.user;
+    return data.session?.user || null;
 }
 
 function renderUserProfile(profile) {
@@ -270,11 +270,19 @@ async function loadUserProfile() {
         return false;
     }
 
-    const { data: profile } = await authClient
-        .from('profiles')
-        .select('full_name, avatar_url, is_admin')
-        .eq('id', user.id)
-        .maybeSingle();
+    let profile = null;
+    try {
+        const { data, error } = await authClient
+            .from('profiles')
+            .select('full_name, avatar_url, is_admin')
+            .eq('id', user.id)
+            .maybeSingle();
+        if (error) throw error;
+        profile = data;
+    } catch (error) {
+        console.error('[auth] profile:', error);
+        if (renderCachedUserProfile()) return true;
+    }
 
     const fullName = profile?.full_name || user.user_metadata?.full_name || '';
     const cachedProfile = {
@@ -330,14 +338,32 @@ async function openProfileSettings() {
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    const { data: profile, error } = await authClient
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .eq('id', user.id)
-        .maybeSingle();
+    const cachedProfile = window.vmesteCache?.read(`profile:${user.id}`);
+    if (cachedProfile) {
+        const [cachedName = '', ...cachedSurnameParts] = (cachedProfile.fullName || '').split(' ').filter(Boolean);
+        document.getElementById('settings-name').value = cachedName;
+        document.getElementById('settings-surname').value = cachedSurnameParts.join(' ');
+        document.getElementById('settings-email').value = user.email || '';
+        const cachedPreview = document.getElementById('settings-avatar-preview');
+        if (cachedPreview) cachedPreview.src = cachedProfile.avatarUrl || DEFAULT_PROFILE_AVATAR;
+    }
+
+    let profile = null;
+    let error = null;
+    try {
+        ({ data: profile, error } = await authClient
+            .from('profiles')
+            .select('full_name, avatar_url')
+            .eq('id', user.id)
+            .maybeSingle());
+    } catch (requestError) {
+        error = requestError;
+    }
 
     if (error) {
-        showSettingsMessage('Не удалось загрузить настройки профиля.');
+        showSettingsMessage(cachedProfile
+            ? 'Не удалось обновить настройки из Supabase. Показаны сохранённые данные.'
+            : 'Не удалось загрузить настройки профиля.');
         return;
     }
 
@@ -349,6 +375,11 @@ async function openProfileSettings() {
     const fileInput = document.getElementById('settings-avatar-file');
     if (preview) preview.src = profile?.avatar_url || DEFAULT_PROFILE_AVATAR;
     if (fileInput) fileInput.value = '';
+    window.vmesteCache?.write(`profile:${user.id}`, {
+        ...(cachedProfile || {}),
+        fullName: profile?.full_name || user.user_metadata?.full_name || '',
+        avatarUrl: profile?.avatar_url || DEFAULT_PROFILE_AVATAR,
+    });
     selectedAvatarFile = null;
     removeAvatarRequested = false;
 

@@ -24,6 +24,8 @@ const SHOP_SUPABASE_KEY = window.vmesteSupabaseConfig.publishableKey;
 /* ── Настройки ── */
 const PAGE_SIZE     = 8;
 const ANIMATE_DELAY = 60; /* ms между карточками */
+const SHOP_SELECT_FIELDS = 'id,slug,name,material,price,sizes,image_url';
+const SHOP_REQUEST_TIMEOUT = 10000;
 
 /* ── Состояние ── */
 const shopState = {
@@ -44,10 +46,19 @@ function shopReadCache() {
   return cached && Array.isArray(cached.items) ? cached : null;
 }
 
-function shopSameResult(cached, items, total) {
+function shopSameResult(cached, items, hasMore) {
   return cached
-    && cached.total === total
+    && Boolean(cached.hasMore) === Boolean(hasMore)
     && JSON.stringify(cached.items) === JSON.stringify(items);
+}
+
+function shopEscape(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 function shopRenderInitial(items) {
@@ -65,29 +76,29 @@ async function shopFetch({ page, search, ascending }) {
   const order  = `name.${ascending ? 'asc' : 'desc'}`;
 
   let url = `${SHOP_SUPABASE_URL}/rest/v1/catalog_products`
-    + `?select=*`
+    + `?select=${SHOP_SELECT_FIELDS}`
     + `&order=${order}`
-    + `&limit=${PAGE_SIZE}`
+    + `&limit=${PAGE_SIZE + 1}`
     + `&offset=${offset}`;
 
   if (search.trim()) {
     url += `&name=ilike.*${encodeURIComponent(search.trim())}*`;
   }
 
-  const res = await fetch(url, {
+  const res = await (window.vmesteFetchWithTimeout || fetch)(url, {
     headers: {
       'apikey':        SHOP_SUPABASE_KEY,
-      'Prefer':        'count=exact',
+      'Authorization': `Bearer ${SHOP_SUPABASE_KEY}`,
     },
-  });
+  }, SHOP_REQUEST_TIMEOUT);
 
   if (!res.ok) throw new Error(`Supabase: ${res.status}`);
 
-  const items = await res.json();
-  const range = res.headers.get('content-range') || '';
-  const total = parseInt(range.split('/')[1] || '0', 10);
+  const rows = await res.json();
+  const hasMore = rows.length > PAGE_SIZE;
+  const items = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
 
-  return { items, total };
+  return { items, hasMore };
 }
 
 /* =====================================================
@@ -95,16 +106,21 @@ async function shopFetch({ page, search, ascending }) {
    ===================================================== */
 function shopCardHTML(product) {
   const sizes     = Array.isArray(product.sizes) ? product.sizes : ['XS', 'S', 'M', 'L', 'XL'];
+  const name      = product.name ?? '—';
+  const imagePath = product.image_url || '';
   const sizeItems = sizes
     .map((s, index) => `<button class="shop-card__size${s === 'L' || (index === 0 && !sizes.includes('L')) ? ' active' : ''}"
                         onclick="shopSelectSize(this,'${product.id}')">${s}</button>`)
     .join('');
 
-  const imageUrl = window.vmesteProductImageUrl(product.image_url);
+  const imageUrl = window.vmesteProductImageUrl(imagePath, 'card');
+  const originalAttr = imagePath
+    ? ` data-vmeste-original-image="${shopEscape(imagePath)}"`
+    : '';
   const img = imageUrl
-    ? `<img src="${imageUrl}" alt="${product.name}" loading="lazy" />`
+    ? `<img src="${shopEscape(imageUrl)}" alt="${shopEscape(name)}" loading="lazy" decoding="async"${originalAttr} />`
     : `<img src="https://placehold.co/400x400/f0eeeb/b0a898?text=фото"
-            alt="${product.name}" loading="lazy" />`;
+            alt="${shopEscape(name)}" loading="lazy" decoding="async" />`;
 
   const price = product.price
     ? `<div class="shop-card__price">${Number(product.price).toLocaleString('ru-RU')} ₽</div>`
@@ -113,16 +129,16 @@ function shopCardHTML(product) {
   return `
     <article class="shop-card" data-id="${product.id}" data-slug="${product.slug}">
       <a class="shop-card__link" href="product.html?slug=${encodeURIComponent(product.slug)}"
-         aria-label="Открыть товар: ${product.name}">
+         aria-label="Открыть товар: ${shopEscape(name)}">
         <div class="shop-card__img-wrap">${img}</div>
       </a>
       <div class="shop-card__body">
         <a class="shop-card__name" href="product.html?slug=${encodeURIComponent(product.slug)}">
-          ${product.name ?? '—'}
+          ${shopEscape(name)}
         </a>
         <div class="shop-card__meta">
           <span class="shop-card__meta-label">материал</span>
-          <span class="shop-card__meta-value">${product.material ?? '—'}</span>
+          <span class="shop-card__meta-value">${shopEscape(product.material ?? '—')}</span>
         </div>
         ${price}
         <div class="shop-card__footer">
@@ -180,9 +196,10 @@ async function shopLoad(reset = false) {
     cached = shopReadCache();
     if (cached) {
       shopRenderInitial(cached.items);
+      shopAnimateCards([...grid.querySelectorAll('.shop-card')]);
       shopState.products = [...cached.items];
       shopState.page = 1;
-      shopState.hasMore = shopState.products.length < cached.total;
+      shopState.hasMore = Boolean(cached.hasMore);
     }
   }
 
@@ -191,7 +208,7 @@ async function shopLoad(reset = false) {
   if (!cached) grid.insertAdjacentHTML('beforeend', shopSkeletonHTML(skelCount));
 
   try {
-    const { items, total } = await shopFetch({
+    const { items, hasMore } = await shopFetch({
       page:      reset ? 0 : shopState.page,
       search:    shopState.search,
       ascending: shopState.sortAsc,
@@ -201,14 +218,14 @@ async function shopLoad(reset = false) {
     grid.querySelectorAll('.shop-card--skeleton').forEach(el => el.remove());
 
     if (reset) {
-      if (!shopSameResult(cached, items, total)) {
+      if (!shopSameResult(cached, items, hasMore)) {
         shopRenderInitial(items);
         shopAnimateCards([...grid.querySelectorAll('.shop-card')]);
       }
       shopState.products = [...items];
       shopState.page = 1;
-      shopState.hasMore = shopState.products.length < total;
-      window.vmesteCache?.write(shopCacheKey(), { items, total });
+      shopState.hasMore = hasMore;
+      window.vmesteCache?.write(shopCacheKey(), { items, hasMore, cachedAt: Date.now() });
     } else {
       const startIndex = grid.querySelectorAll('.shop-card:not(.shop-card--skeleton)').length;
       grid.insertAdjacentHTML('beforeend', items.map(shopCardHTML).join(''));
@@ -219,7 +236,7 @@ async function shopLoad(reset = false) {
 
       shopState.products.push(...items);
       shopState.page++;
-      shopState.hasMore = shopState.products.length < total;
+      shopState.hasMore = hasMore;
     }
   } catch (err) {
     grid.querySelectorAll('.shop-card--skeleton').forEach(el => el.remove());
