@@ -14,4 +14,15 @@ if (window.supabase?.createClient) {
       },
     }
   );
+  window.vmesteSupabaseDirect = window.supabase.createClient(
+    config.url,
+    config.publishableKey,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    }
+  );
 }

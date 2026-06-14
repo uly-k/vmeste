@@ -1,4 +1,4 @@
-const crmClient = window.vmesteSupabase;
+const crmClient = window.vmesteSupabaseDirect;
 const crmState = document.getElementById('crmState');
 const crmContent = document.getElementById('crmContent');
 const crmOrders = document.getElementById('crmOrders');

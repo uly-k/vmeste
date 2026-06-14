@@ -1,4 +1,4 @@
-const accountOrdersClient = window.vmesteSupabase;
+const accountOrdersClient = window.vmesteSupabaseDirect;
 const accountOrdersContainer = document.getElementById('cardsContainer');
 const accountOrdersFilters = document.querySelectorAll('.filter-btn');
 let accountOrders = [];
@@ -159,10 +159,6 @@ function accountOrdersLoad(options = {}) {
 
 async function accountOrdersLoadInner({ force = false } = {}) {
   if (!accountOrdersClient || !accountOrdersContainer) return;
-
-  Object.keys(localStorage)
-    .filter(k => k.startsWith('vmeste_cache_v1:orders:') || k.startsWith('vmeste_cache_v1:shop:') || k.startsWith('vmeste_cache_v1:lk:'))
-    .forEach(k => localStorage.removeItem(k));
 
   const { data: sessionData } = await accountOrdersClient.auth.getSession();
   const user = sessionData.session?.user;
