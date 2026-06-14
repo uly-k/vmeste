@@ -1,8 +1,8 @@
 const VMESTE_SUPABASE_URL = 'https://mmbslfwzaxmxmaevbdse.supabase.co';
 const VMESTE_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_r364-y7dWbnYNBqeeAGRVQ_CwpD2cMw';
 const VMESTE_PRODUCT_IMAGE_BUCKET = 'product-images';
-const VMESTE_API_PROXY = 'https://vmeste-supabase-proxy.joroslav121.workers.dev/?url=';
-const VMESTE_API_PROXY_FALLBACK = 'https://corsproxy.io/?url=';
+const VMESTE_API_PROXY = 'https://corsproxy.io/?url=';
+const VMESTE_API_PROXY_FALLBACK = 'https://vmeste-supabase-proxy.joroslav121.workers.dev/?url=';
 
 const VMESTE_PRODUCT_IMAGE_PRESETS = Object.freeze({
   thumb:   { width: 200, height: 200, fit: 'cover', quality: 80 },
@@ -49,7 +49,7 @@ window.vmesteSupabaseFetch = async function(url, options = {}) {
       if (!proxy) continue;
       try {
         const proxyUrl = proxy + encodeURIComponent(url);
-        const response = await window.vmesteFetchWithTimeout(proxyUrl, { ...options }, 15000);
+        const response = await window.vmesteFetchWithTimeout(proxyUrl, { ...options }, 30000);
         if (response.ok) return response;
       } catch (_) {}
     }
