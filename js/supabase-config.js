@@ -1,7 +1,7 @@
 const VMESTE_SUPABASE_URL = 'https://mmbslfwzaxmxmaevbdse.supabase.co';
 const VMESTE_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_r364-y7dWbnYNBqeeAGRVQ_CwpD2cMw';
 const VMESTE_PRODUCT_IMAGE_BUCKET = 'product-images';
-const VMESTE_API_PROXY = 'https://vmeste-supabase-proxy.your-subdomain.workers.dev/?url=';
+const VMESTE_API_PROXY = 'https://vmeste-supabase-proxy.joroslav121.workers.dev/?url=';
 const VMESTE_API_PROXY_FALLBACK = 'https://corsproxy.io/?url=';
 
 const VMESTE_PRODUCT_IMAGE_PRESETS = Object.freeze({
