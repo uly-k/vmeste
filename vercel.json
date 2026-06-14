@@ -4,6 +4,8 @@
     { "src": "api/proxy.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/proxy", "dest": "/api/proxy.js" }
+    { "src": "/api/proxy", "dest": "/api/proxy.js" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
