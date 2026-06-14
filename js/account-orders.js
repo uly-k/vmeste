@@ -1,4 +1,4 @@
-const accountOrdersClient = window.vmesteSupabaseDirect;
+const accountOrdersClient = window.vmesteSupabase;
 const accountOrdersContainer = document.getElementById('cardsContainer');
 const accountOrdersFilters = document.querySelectorAll('.filter-btn');
 let accountOrders = [];

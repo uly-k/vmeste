@@ -188,7 +188,7 @@ class PersonalCabinet {
       .forEach(k => localStorage.removeItem(k));
 
     try {
-      const client = window.vmesteSupabaseDirect;
+      const client = window.vmesteSupabase;
 
       const [ordersResult, eventsResult] = await Promise.all([
         client.from('orders')
