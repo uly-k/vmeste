@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="styles/base/reset.css">
   <link rel="stylesheet" href="styles/base/variables.css">
   <link rel="stylesheet" href="styles/base/typography.css">
+  <link rel="stylesheet" href="styles/base/dark-theme.css">
   
 
   <link rel="stylesheet" href="styles/layout/grid.css">
@@ -22,8 +23,19 @@
 
   <link rel="stylesheet" href="styles/components/buttons.css">
   <link rel="stylesheet" href="styles/components/cards.css">
+  <link rel="stylesheet" href="styles/components/akk.css">
+  <link rel="stylesheet" href="styles/components/slider.css">
+  <link rel="stylesheet" href="styles/components/filters.css">
 
-  <link rel="stylesheet" href="styles/pages/home.css">
+  <link rel="stylesheet" href="styles/components/cards-afisha.css">
+  <link rel="stylesheet" href="styles/pages/shop.css">
+  <link rel="stylesheet" href="styles/pages/cart.css">
+  <link rel="stylesheet" href="styles/pages/afisha.css">
+
+  <link rel="stylesheet" href="styles/utils/helpers.css">
+
+
+
 
   <title>(в)месте афиша</title>
 </head>
@@ -94,10 +106,88 @@
     </div>  
   </div>
 
-  <main>
+  <main id="afisha">
 
+    <div id="zn1" class="layout"> <h3>афиша</h3> </div>
 
     
+    <div  class="layout">
+
+      <!-- тулбар -->
+      <div class="mer__toolbar">
+
+        <div class="mer__search-wrap">
+          <input
+            class="mer__search"
+            id="merSearch"
+            type="text"
+            placeholder="поиск"
+            autocomplete="off"
+          />
+          <span class="mer__search-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.8">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="16.5" y1="16.5" x2="22" y2="22"/>
+            </svg>
+          </span>
+        </div>
+
+        <!-- Кнопка фильтров (попап создаётся JS-ом рядом с ней) -->
+        <button class="mer__btn-toolbar" id="merFiltersBtn">
+          фильтры
+        </button>
+
+        <!-- Сортировка — кастомный dropdown -->
+        <div class="mer__custom-select" id="merSortWrap">
+          <button class="mer__custom-select-trigger" id="merSortTrigger">по умолчанию</button>
+          <div class="mer__custom-select-dropdown" id="merSortDropdown">
+            <button class="mer__custom-select-option selected" data-value="default">по умолчанию</button>
+            <button class="mer__custom-select-option" data-value="weekday">по дню недели</button>
+            <button class="mer__custom-select-option" data-value="price-asc">сначала дешевле</button>
+            <button class="mer__custom-select-option" data-value="price-desc">сначала дороже</button>
+          </div>
+          <input type="hidden" id="merSortSelect" value="default">
+        </div>
+
+    </div>
+
+    <!-- Строка активных фильтров (теги-пилюли) -->
+    <div class="mer__active-filters" id="merActiveFilters" hidden></div>
+
+    <h3 id="searchResultsHeading" class="full-width" style="display: none;">результаты поиска</h3>
+    <div class="mer__grid" id="searchResultsGrid" ></div>
+   
+
+    <div id="zn2" class="full-width"> <h3>постоянные мероприятия</h3> </div>
+ 
+
+    <div class="mer__grid" id="merGrid"></div>
+
+
+            <!-- загрузить ещё -->
+    <div class="mer__loadmore-wrapper">
+      <button class="mer__loadmore" id="merLoadMore">
+        загрузить ещё
+      </button>
+    </div>
+    
+   
+  
+    <h3 id="zn2"  class="full-width">
+      ближайшие мероприятия
+    </h3>
+
+        <!-- Грид карточек — те же классы что и у постоянных -->
+    <div class="mer__grid" id="upcomingGrid"></div>
+
+        <!-- Кнопка «загрузить ещё» / «свернуть» -->
+    <div class="mer__loadmore-wrapper">
+      <button class="mer__loadmore" id="upcomingLoadMore">загрузить ещё</button>
+    </div>
+
+   
+
   </main>
   
   <!-- FOOTER -->
@@ -224,11 +314,14 @@
 
 
   </footer>
-
-
+  <script src="js/shop-filters.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/akk.js"></script>
   <script src="js/burger.js"></script>
   <script src="js/up.js"></script>
   <script src="js/cart.js"></script>
+  <script src="js/afisha.js"></script>
+  <script src="js/theme.js"></script>
   
 </body>
 </html>

@@ -182,19 +182,179 @@
     opacity: 1 !important;
   }
 }
-
-/* Мобилка (756px) */
 @media (max-width: 756px) {
   .abonement-stack {
-    padding: 100px 12px;
-    margin: -100px -12px;
-    gap: 12px;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    padding: 20px;
+    margin: 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .abonement-stack::-webkit-scrollbar {
+    display: none;
   }
 
   .abonement-item {
-    width: 100%;
+    flex: 0 0 90%;
+    min-width: 280px;
+    min-height: 320px;
     height: auto;
-    min-height: 200px;
+    scroll-snap-align: start;
+    padding: 28px 20px;
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    transform: none !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    overflow-x: hidden;   /* ← запрещаем горизонтальное вылезание */
+  }
+
+  /* Главное: заставляем текст переноситься */
+  .abonement-item__title,
+  .abonement-item__description {
+    opacity: 1 !important;
+    max-width: 100%;
+    word-wrap: break-word;       /* старый стандарт */
+    overflow-wrap: break-word;   /* современный стандарт */
+    word-break: break-word;      /* для длинных слов */
+    white-space: normal;         /* запрещаем текст в одну строку */
+  }
+}
+.abonement-stack {
+  -ms-overflow-style: none;  /* IE и Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.abonement-stack::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
+
+/* ===== ПРАВИЛА (СТЕК) – полностью аналогично абонементам ===== */
+.rules-stack {
+  grid-column: 1 / -1;
+  position: relative;
+  min-height: 472px;
+}
+
+.rule-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 32px;
+  border-radius: 24px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center center;
+  cursor: pointer;
+  width: 792px;
+  height: 408px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* цвета */
+.rule-card--white { background-color: var(--white); }
+.rule-card--blue { background-color: var(--blue); }
+.rule-card--lightblue { background-color: var(--light-blue); }
+.rule-card--green { background-color: var(--green); }
+
+.rule-card__title,
+.rule-card__description {
+  transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.rule-card.active-card {
+  transform: translateY(-8px) rotate(0deg) !important;
+}
+.rule-card.active-card .rule-card__title,
+.rule-card.active-card .rule-card__description {
+  opacity: 1 !important;
+}
+
+/* ноутбук (≤1608px) */
+@media (max-width: 1608px) {
+  .rules-stack { min-height: 388px; }
+  .rule-card { width: 560px; height: 324px; }
+}
+
+/* планшет (≤1156px) */
+@media (max-width: 1156px) {
+  .rules-stack {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
+    min-height: auto;
+    padding: 80px 12px;
+    margin: -80px -12px;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .rules-stack::-webkit-scrollbar { display: none; }
+  .rule-card {
+    position: relative;
+    left: auto !important;
+    top: auto;
+    flex-shrink: 0;
+    scroll-snap-align: center;
+    transform: none !important;
+    width: 670px;
+    height: 320px;
+  }
+  .rule-card.active-card { transform: none !important; }
+  .rule-card__title,
+  .rule-card__description { opacity: 1 !important; }
+}
+
+/* мобилка (≤756px) – главное изменение */
+@media (max-width: 756px) {
+  .rules-stack {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 16px;
     padding: 20px;
+    margin: 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .rules-stack::-webkit-scrollbar { display: none; }
+  .rule-card {
+    flex: 0 0 90%;
+    min-width: 280px;
+    min-height: 320px;
+    height: auto;
+    scroll-snap-align: start;
+    padding: 28px 20px;
+    position: relative;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    transform: none !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .rule-card__title,
+  .rule-card__description {
+    opacity: 1 !important;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
   }
 }

@@ -1,0 +1,463 @@
+/* ================================================================
+   filters.css — попап фильтров, кастомный select сортировки,
+                 теги активных фильтров, бейдж на кнопке
+   Подключить в <head> после cards-afisha.css
+   ================================================================ */
+
+/* ── ОБЁРТКА СОРТИРОВКИ ─────────────────────────────────────────── */
+.mer__sort-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mer__sort-select {
+  height: 52px;
+  padding: 0 44px 0 20px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--blue);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.mer__sort-select:hover  { background: #daeeff; }
+.mer__sort-select:focus  { box-shadow: 0 0 0 2px var(--blue); }
+
+.mer__sort-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--blue);
+  pointer-events: none;
+}
+
+/* ── КАСТОМНЫЙ DROPDOWN ──────────────────────────────────────────── */
+.mer__custom-select {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mer__custom-select-trigger {
+  height: 52px;
+  padding: 0 44px 0 20px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--blue);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.mer__custom-select-trigger:hover { background: #daeeff; }
+
+.mer__custom-select-trigger::after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--blue);
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.mer__custom-select.open .mer__custom-select-trigger::after {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.mer__custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 100%;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mer__custom-select.open .mer__custom-select-dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mer__custom-select-option {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--black);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.mer__custom-select-option:hover {
+  background: #f0f7ff;
+  color: var(--blue);
+}
+
+.mer__custom-select-option.selected {
+  background: var(--blue);
+  color: var(--white);
+}
+
+/* ── БЕЙДЖ НА КНОПКЕ «ФИЛЬТРЫ» ─────────────────────────────────── */
+#merFiltersBtn,
+#shopFiltersBtn {
+  position: relative;
+}
+
+.mer__filter-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 100px;
+  background: var(--blue);
+  color: var(--white);
+  font-family: var(--font-primary);
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ── АКТИВНОЕ СОСТОЯНИЕ КНОПКИ ──────────────────────────────────── */
+.mer__btn-toolbar.active {
+  background: #daeeff;
+}
+
+/* ── СТРОКА АКТИВНЫХ ТЕГОВ ──────────────────────────────────────── */
+.mer__active-filters {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.mer__active-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px 0 14px;
+  border-radius: 100px;
+  background: var(--blue);
+  color: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+}
+
+.mer__active-tag button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  color: var(--white);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s;
+}
+
+.mer__active-tag button:hover {
+  background: rgba(255,255,255,0.45);
+}
+
+/* ── ПОПАП ФИЛЬТРОВ ─────────────────────────────────────────────── */
+.mer__filter-popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  width: 320px;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mer__filter-popup.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Заголовок */
+.mer__filter-popup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  font-weight: 500;
+  color: var(--black);
+}
+
+.mer__filter-popup-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: var(--black);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+.mer__filter-popup-close:hover { background: #e0e0e0; }
+
+/* Группа */
+.mer__filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mer__filter-group-label {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #aaa;
+}
+
+/* Чипсы */
+.mer__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mer__chip {
+  height: 36px;
+  padding: 0 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 100px;
+  background: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--black);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+
+.mer__chip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.mer__chip.active {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--white);
+}
+
+/* Футер */
+.mer__filter-popup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.mer__filter-reset {
+  background: none;
+  border: none;
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #aaa;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.12s;
+}
+.mer__filter-reset:hover { color: var(--black); }
+
+.mer__filter-apply {
+  height: 40px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 100px;
+  background: var(--blue);
+  color: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.mer__filter-apply:hover { background: var(--dark-blue, #005fd4); }
+
+/* ── АДАПТИВ ────────────────────────────────────────────────────── */
+@media (max-width: 756px) {
+  .mer__sort-select {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 36px 0 16px;
+  }
+
+  .mer__custom-select-trigger {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 36px 0 16px;
+  }
+
+  .mer__filter-popup {
+    width: calc(100vw - 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+  }
+
+  .mer__filter-popup.active {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+
+/* ── МАГАЗИН — shop__ алиасы для тулбара ────────────────────────── */
+
+.shop__filters-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Попап внутри shop__filters-wrap открывается прямо под кнопкой */
+.shop__filters-wrap .mer__filter-popup {
+  left: 0;
+  right: auto;
+}
+
+.shop__sort-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.shop__sort-select {
+  height: 52px;
+  padding: 0 44px 0 20px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--blue);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.shop__sort-select:hover { background: #daeeff; }
+.shop__sort-select:focus { box-shadow: 0 0 0 2px var(--blue); }
+
+.shop__sort-arrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--blue);
+  pointer-events: none;
+}
+
+/* Бейдж на кнопке фильтров магазина */
+#shopFiltersBtn {
+  position: relative;
+}
+
+@media (max-width: 756px) {
+  .shop__sort-select {
+    height: 44px;
+    font-size: 13px;
+    padding: 0 36px 0 16px;
+  }
+
+  /* На мобилке попап растягивается на всю ширину экрана */
+  .shop__filters-wrap .mer__filter-popup {
+    width: calc(100vw - 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+  }
+
+  .shop__filters-wrap .mer__filter-popup.active {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ── АФИША: обёртка вокруг кнопки фильтров ─────────────────────── */
+.mer__filters-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mer__filters-wrap .mer__filter-popup {
+  left: 0;
+  right: auto;
+}
+
+@media (max-width: 756px) {
+  .mer__filters-wrap .mer__filter-popup {
+    width: calc(100vw - 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+  }
+
+  .mer__filters-wrap .mer__filter-popup.active {
+    transform: translateX(-50%) translateY(0);
+  }
+}

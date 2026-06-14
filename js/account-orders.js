@@ -56,15 +56,37 @@ function accountOrdersDate(value) {
   });
 }
 
+const EVENT_IMG_NAMES = ['domik.png','manflowerblue.png','nog.png','foto.png','prl.png','stul.png','book.png','vhod.png','manflower.png','manmo.png','manm.png'];
+
+function accountOrdersImageUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) {
+    if (window.vmesteProxyUrl) return window.vmesteProxyUrl(path, { fit: 'contain', quality: 85 });
+    return path;
+  }
+  if (path.startsWith('products/')) {
+    const fullUrl = `${window.vmesteSupabaseConfig?.url || ''}/storage/v1/object/public/product-images/${path}`;
+    if (window.vmesteProxyUrl) return window.vmesteProxyUrl(fullUrl, { fit: 'contain', quality: 85 });
+    return fullUrl;
+  }
+  if (path.startsWith('media/')) {
+    const filename = path.replace('media/', '');
+    const bucket = EVENT_IMG_NAMES.includes(filename) ? 'event-images' : 'product-images';
+    const fullUrl = `${window.vmesteSupabaseConfig?.url || ''}/storage/v1/object/public/${bucket}/${filename}`;
+    if (window.vmesteProxyUrl) return window.vmesteProxyUrl(fullUrl, { fit: 'contain', quality: 85 });
+    return fullUrl;
+  }
+  if (window.vmesteProductImageUrl) return window.vmesteProductImageUrl(path, 'order');
+  return path;
+}
+
 function accountOrderItemHTML(item) {
-  const imageUrl = window.vmesteProductImageUrl?.(item.product_image_path, 'order')
-    || 'media/profile-placeholder.svg';
+  const imageUrl = accountOrdersImageUrl(item.product_image_path) || 'media/profile-placeholder.svg';
 
   return `
     <li class="account-order-item">
       <img class="account-order-item__image" src="${accountOrdersEscape(imageUrl)}"
-           alt="${accountOrdersEscape(item.product_name)}" loading="lazy" decoding="async"
-           ${item.product_image_path ? `data-vmeste-original-image="${accountOrdersEscape(item.product_image_path)}"` : ''}>
+           alt="${accountOrdersEscape(item.product_name)}" loading="lazy" decoding="async">
       <div class="account-order-item__body">
         <strong>${accountOrdersEscape(item.product_name)}</strong>
         <span>размер: ${accountOrdersEscape(item.variant_size || 'без размера')}</span>
@@ -76,37 +98,52 @@ function accountOrderItemHTML(item) {
 
 function accountOrdersHTML(order) {
   const items = order.order_items || [];
+  const isEvent = order._isEvent;
   const status = accountOrderStatuses[order.status] || {
-    label: order.status,
-    description: '',
+    label: isEvent ? 'подтверждено' : order.status,
+    description: isEvent ? 'Запись на мероприятие подтверждена.' : '',
   };
+
+  const eventImageUrl = isEvent
+    ? (window.vmesteEventImageUrl?.(order.order_items?.[0]?.product_image_path, order._eventId) || '')
+    : '';
+
+  const itemsHtml = isEvent
+    ? items.map(item => `
+        <li class="account-order-item">
+          ${eventImageUrl ? `<img class="account-order-item__image" src="${accountOrdersEscape(eventImageUrl)}" alt="${accountOrdersEscape(item.product_name)}" loading="lazy" decoding="async">` : ''}
+          <div class="account-order-item__body">
+            <strong>${accountOrdersEscape(item.product_name)}</strong>
+            <span>${accountOrdersEscape(item.variant_size || '')}</span>
+            <span>${accountOrdersMoney(item.unit_price)} ₽</span>
+          </div>
+        </li>`).join('')
+    : items.map(accountOrderItemHTML).join('');
+
+  const footerHtml = isEvent
+    ? `<div><strong>${accountOrdersMoney(order.total_amount)} ₽</strong></div>`
+    : `<div>
+        <small>самовывоз</small>
+        <p>${accountOrdersEscape(accountPickupPoints[order.pickup_point] || 'пространство (в)месте')}</p>
+      </div>
+      <strong>${accountOrdersMoney(order.total_amount)} ₽</strong>`;
 
   return `
     <article class="account-order account-order--${accountOrdersEscape(order.status)}">
       <div class="account-order__head">
         <div>
-          <strong>заказ #${accountOrdersEscape(order.id.slice(0, 8))}</strong>
+          <strong>${isEvent ? 'мероприятие' : 'заказ'} #${accountOrdersEscape(order.id.slice(0, 8))}</strong>
           <small>${accountOrdersEscape(accountOrdersDate(order.created_at))}</small>
         </div>
         <span class="account-order__status">${accountOrdersEscape(status.label)}</span>
       </div>
       <p class="account-order__status-note">${accountOrdersEscape(status.description)}</p>
       <ul class="account-order__items">
-        ${items.map(accountOrderItemHTML).join('')}
+        ${itemsHtml}
       </ul>
       <div class="account-order__footer">
-        <div>
-          <small>самовывоз</small>
-          <p>${accountOrdersEscape(accountPickupPoints[order.pickup_point] || 'пространство (в)месте')}</p>
-        </div>
-        <strong>${accountOrdersMoney(order.total_amount)} ₽</strong>
+        ${footerHtml}
       </div>
-      ${order.status === 'pending' ? `
-        <button class="account-order__cancel" type="button"
-                data-action="cancel-order" data-order-id="${accountOrdersEscape(order.id)}">
-          отменить заказ
-        </button>
-      ` : ''}
     </article>
   `;
 }
@@ -123,15 +160,9 @@ function accountOrdersLoad(options = {}) {
 async function accountOrdersLoadInner({ force = false } = {}) {
   if (!accountOrdersClient || !accountOrdersContainer) return;
 
-  const cachedUserId = window.vmesteCache?.currentUserId();
-  const cached = cachedUserId
-    ? window.vmesteCache?.read(`orders:${cachedUserId}`)
-    : null;
-  const hasCachedOrders = Array.isArray(cached);
-  if (hasCachedOrders) {
-    accountOrders = cached;
-    accountOrdersRender();
-  }
+  Object.keys(localStorage)
+    .filter(k => k.startsWith('vmeste_cache_v1:orders:') || k.startsWith('vmeste_cache_v1:shop:') || k.startsWith('vmeste_cache_v1:lk:'))
+    .forEach(k => localStorage.removeItem(k));
 
   const { data: sessionData } = await accountOrdersClient.auth.getSession();
   const user = sessionData.session?.user;
@@ -140,31 +171,46 @@ async function accountOrdersLoadInner({ force = false } = {}) {
     return;
   }
 
-  if (!force
-      && accountOrdersLoadedUserId === user.id
-      && Date.now() - accountOrdersLoadedAt < ACCOUNT_ORDERS_CACHE_TTL) {
-    return accountOrders;
-  }
+  accountOrdersContainer.innerHTML = '<p class="lk-state-msg">Загружаем заказы...</p>';
 
-  if (!hasCachedOrders || cachedUserId !== user.id) {
-    accountOrdersContainer.innerHTML = '<p class="lk-state-msg">Загружаем заказы...</p>';
-  }
-  const { data: orders, error } = await accountOrdersClient
-    .from('orders')
-    .select('id,status,total_amount,created_at,pickup_point,order_items(product_name,variant_size,unit_price,quantity,product_image_path)')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+  const [ordersResult, eventsResult] = await Promise.all([
+    accountOrdersClient.from('orders')
+      .select('id,status,total_amount,created_at,pickup_point,order_items(product_name,variant_size,unit_price,quantity,product_image_path)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+    accountOrdersClient.from('event_registrations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false }),
+  ]);
 
-  if (error) {
-    accountOrdersContainer.innerHTML = '<p class="lk-state-msg">Не удалось загрузить заказы. Проверьте обновление базы данных.</p>';
-    return;
-  }
+  const orders = ordersResult.data || [];
+  const eventRows = eventsResult.data || [];
 
-  const changed = window.vmesteCache?.write(`orders:${user.id}`, orders);
-  accountOrders = orders;
+  const eventCards = eventRows.map(ev => ({
+    id: ev.id,
+    status: ev.status,
+    total_amount: ev.event_price,
+    created_at: ev.created_at,
+    pickup_point: '',
+    order_items: [{
+      product_name: ev.event_name,
+      variant_size: ev.event_date && ev.event_time ? `${ev.event_date}, ${ev.event_time}` : ev.event_date,
+      unit_price: ev.event_price,
+      quantity: 1,
+      product_image_path: ev.event_image || '',
+    }],
+    _isEvent: true,
+    _eventId: ev.event_id,
+  }));
+
+  const allOrders = [...orders, ...eventCards].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  window.vmesteCache?.write(`orders:${user.id}`, allOrders);
+  accountOrders = allOrders;
   accountOrdersLoadedUserId = user.id;
   accountOrdersLoadedAt = Date.now();
-  if (changed || !hasCachedOrders || cachedUserId !== user.id) accountOrdersRender();
+  accountOrdersRender();
   return accountOrders;
 }
 

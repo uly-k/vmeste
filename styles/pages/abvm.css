@@ -291,22 +291,45 @@
 }
 
 .space-map__media {
-  grid-column: 7 / -1;
+  grid-column: 10 / -1;
   display: flex;
   justify-content: flex-end;
-
-  
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 400px;
 }
 
-.space-map__media img{
-  object-fit: contain;
-  max-width: 100%;  /* ← не шире родителя */
-  max-height: 100%; /* ← не выше родителя */
-  width: auto;      /* ← сохраняем пропорции */
-  height: auto;     /* ← сохраняем пропорции */
+.space-map__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 24px;
-  
+  display: block;
 }
+
+/* Адаптив для планшета */
+@media (max-width: 1156px) {
+  .space-map__media {
+    grid-column: 4 / -1;
+    max-width: 350px;
+  }
+}
+
+/* Адаптив для мобилки */
+@media (max-width: 756px) {
+  .space-map__media {
+    grid-column: 1 / -1;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    justify-content: center;
+  }
+  
+  .space-map__media img {
+    max-width: auto;
+    margin: 0 auto;
+  }
+}
+
 
 .zone {
   cursor: pointer;
@@ -650,18 +673,7 @@
 }
 
 @media (max-width: 756px) {
-  .rules-stack {
-    padding: 100px 12px;
-    margin: -100px -12px;
-    gap: 12px;
-  }
 
-  .rule-card {
-    width: 100%;
-    height: auto;
-    min-height: 200px;
-    padding: 20px;
-  }
 }
 
 @keyframes slideHorizontal {
@@ -697,6 +709,97 @@
   .space-map__media {
     grid-column: 7 / -1;
   }
+
+  
+  #neirotext1 {
+    padding-top: 4px;
+    grid-column: 1 / -1;
+    line-height: 85%;
+  }
+
+  #neirotext2 {
+    display: flex;
+    text-align: end;
+    justify-content: end;
+    grid-column: 7 / -1;
+    padding-top: 16px;  
+    line-height: 75%;
+  }
+
+  #neirotext3 {
+    display: flex;
+    justify-content: start;
+    grid-column: 1/ 6;
+    padding-top: 36px;
+      
+  }
+
+    .dashed-line-1 {
+    top: 440px;
+    left: 200px;
+    height: 2px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--blue) 0px,
+      var(--blue) 9px,
+      transparent 9px,
+      transparent 18px
+    );
+  }
+
+  .dashed-line-2 {
+    display: none;
+  }
+
+  .dashed-line-3 {
+    top: 330px;
+    left: 800px;
+    width: 2px;
+    height: 0%;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--blue) 0px,
+      var(--blue) 9px,
+      transparent 9px,
+      transparent 18px
+    );
+  }
+
+  .dashed-line-4 {
+    display: none;
+  }
+
+  .podmenu {
+    grid-column: span 12;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    
+  }
+
+  @keyframes slideVertical3 {
+    0% { height: 0; }
+    100% { height: 20%; }
+  }
+
+  .hero__circle {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.25);
+    top: 410px;
+    right: 535px;
+    z-index: 100;
+    
+  }
+
+
+
+
 }
 
 
@@ -714,6 +817,96 @@
   .space-map__media {
     grid-column: 4 / -1;
   }
+
+   
+  #neirotext1 {
+    padding-top: 4px;
+    grid-column: 1 / 5;
+    line-height: 95%;
+  }
+
+  #neirotext2 {
+    display: flex;
+    text-align: end;
+    justify-content: end;
+    grid-column: 3 / -1;
+    padding-top: 16px;  
+    line-height: 75%;
+  }
+
+  #neirotext3 {
+    display: flex;
+    justify-content: start;
+    grid-column: 1/ 4;
+    padding-top: 36px;
+      
+  }
+
+    .dashed-line-1 {
+    top: 350px;
+    left: 200px;
+    height: 2px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--blue) 0px,
+      var(--blue) 9px,
+      transparent 9px,
+      transparent 18px
+    );
+  }
+
+  .dashed-line-2 {
+    display: none;
+  }
+
+  .dashed-line-3 {
+    top: 270px;
+    left: 500px;
+    width: 2px;
+    height: 0%;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--blue) 0px,
+      var(--blue) 9px,
+      transparent 9px,
+      transparent 18px
+    );
+  }
+
+  .dashed-line-4 {
+    display: none;
+  }
+
+  .podmenu {
+    grid-column: span 6;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    
+  }
+
+  @keyframes slideVertical3 {
+    0% { height: 0; }
+    100% { height: 20%; }
+  }
+
+  .hero__circle {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.25);
+    top: 325px;
+    right: 310px;
+    z-index: 100;
+    
+  }
+
+
+
 }
 
 @media (max-width: 756px) {
@@ -767,6 +960,99 @@
   .karta::-webkit-scrollbar-track {
     background: transparent;
   }
+
+  #zn1 {
+    padding-top: 120px;
+    color: var(--blue);
+  }
+
+  #neirotext1 {
+    padding-top: 4px;
+    grid-column: 1 / -1;
+    line-height: 85%;
+  }
+
+  #neirotext2 {
+    display: flex;
+    text-align: end;
+    justify-content: end;
+    grid-column: 4 / 5;
+    padding-top: 16px;  
+    line-height: 75%;
+  }
+
+  #neirotext3 {
+    display: flex;
+    justify-content: start;
+    grid-column: 1/ 3;
+    padding-top: 36px;
+      
+  }
+
+    .dashed-line-1 {
+    top: 250px;
+    left: 100px;
+    height: 2px;
+    background: repeating-linear-gradient(
+      to right,
+      var(--blue) 0px,
+      var(--blue) 9px,
+      transparent 9px,
+      transparent 18px
+    );
+  }
+
+  .dashed-line-2 {
+    display: none;
+  }
+
+  .dashed-line-3 {
+    top: 250px;
+    left: 300px;
+    width: 2px;
+    height: 0%;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--blue) 0px,
+      var(--blue) 9px,
+      transparent 9px,
+      transparent 18px
+    );
+  }
+
+  .dashed-line-4 {
+    display: none;
+  }
+
+  .podmenu {
+    grid-column: span 4;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    
+  }
+
+  @keyframes slideVertical3 {
+    0% { height: 0; }
+    100% { height: 15%; }
+  }
+
+  .hero__circle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.25);
+    top: 230px;
+    right: 110px;
+    z-index: 100;
+    
+  }
+
+
 }
 
 

@@ -1,0 +1,60 @@
+
+#afisha {
+  background-color: var(--light-blue);
+}
+
+
+#zn1 {
+  padding-top: 170px;
+  color: var(--blue);
+  padding-bottom: 2%;
+}
+
+
+.shop__grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: var(--grid-gap);
+  margin-top: var(--space-8);
+}
+
+#zn2 {
+  grid-column: 1 / -1;
+  padding-top: var(--space-8);
+  color: var(--blue);
+  padding-bottom: 0;
+}
+
+
+#abonem {
+    grid-column: 1/ -1;
+    background: var(--gradient-main);
+}
+
+.mer__collapse-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mer__collapse-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mer__collapse-btn:active {
+  transform: scale(0.98);
+}
+
+.mer__collapse-btn svg {
+  display: block;
+}

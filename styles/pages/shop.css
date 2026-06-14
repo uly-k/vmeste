@@ -15,3 +15,10 @@
   line-height: var(--lh-100);
   color: var(--black);
 }
+
+
+#zn1 {
+  padding-top: 170px;
+  color: var(--blue);
+  padding-bottom: 2%;
+}

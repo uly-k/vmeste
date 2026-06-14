@@ -5,6 +5,8 @@ node_modules/
 .env
 .env.*
 !.env.example
+Api key.txt
+*.key
 
 # Локальные файлы Supabase CLI
 .supabase/
@@ -14,6 +16,7 @@ supabase/seed.sql
 supabase/.branches/
 supabase/.cache/
 supabase/.temp/
+sql из supabase/
 
 # Сборки, кеши и отчеты
 dist/
@@ -48,3 +51,9 @@ desktop.ini
 *.bak
 *.swp
 *.swo
+
+# Kilo (локальные настройки)
+.kilo/
+
+# Продуктовые изображения (хранились бы в Supabase Storage)
+media/products/

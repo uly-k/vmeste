@@ -1,0 +1,436 @@
+
+/* Грид для карточек афиши */
+.mer__grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: var(--grid-gap);
+  margin-top: var(--space-8);
+}
+
+/* ── ТУЛБАР (поиск + фильтры) ── */
+.mer__toolbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  margin-bottom: var(--space-24);
+  padding: 0;
+}
+
+.mer__search-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.mer__search {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  padding: 0 52px 0 24px;
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--black);
+  outline: none;
+  transition: box-shadow 0.15s;
+}
+
+.mer__search:focus {
+  box-shadow: 0 0 0 2px var(--blue);
+}
+
+.mer__search-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.mer__btn-toolbar {
+  height: 52px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 100px;
+  background: var(--white);
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: var(--blue);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.mer__btn-toolbar:hover {
+  background: #daeeff;
+}
+
+.mer__btn-sort {
+  width: 52px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* ── ГРИД ТОВАРОВ ── */
+.shop__grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: var(--grid-gap);
+  margin-top: var(--space-8);
+}
+
+
+
+
+/* ── КАРТОЧКА ── */
+.mer-card {
+  grid-column: span 3;
+  background: var(--white);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  cursor: pointer;
+
+  /* анимация появления */
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.35s ease, transform 0.35s ease,
+              box-shadow 0.2s ease;
+}
+
+.mer-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mer-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 119, 255, 0.10);
+}
+
+.mer-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── ФОТО ── */
+.mer-card__img-wrap {
+  width: 100%;
+  background: #f0eeeb;
+  flex-shrink: 0;
+  border-radius: 24px;
+  position: relative;
+  box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+.mer-card__img-wrap img {
+  width: 100%;
+  display: block;
+  border-radius: 0;
+  transition: transform 0.35s ease;
+}
+
+.mer-card:hover .mer-card__img-wrap img {
+  transform: scale(1.04);
+}
+
+/* ── ТЕЛО ── */
+.mer-card__body {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-16);
+  gap: var(--space-16);
+  flex: 1;
+  justify-content: space-between;
+}
+
+.mer-card__name {
+  display: block;
+  font-family: var(--font-primary);
+  font-size: var(--h3);
+  font-weight: var(--font-weight);
+  line-height: var(--lh-100);
+  color: var(--black);
+  text-decoration: none;
+}
+
+.mer-card__name:hover {
+  color: var(--blue);
+}
+
+.mer-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mer-card__meta-label {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #aaa;
+  line-height: var(--lh-100);
+}
+
+.mer-card__meta-value {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #666;
+  line-height: var(--lh-100);
+}
+
+/* ── НИЖНЯЯ СТРОКА (размеры + кнопка) ── */
+.mer-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+}
+
+.mer-card__sizes {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mer-card__size {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #bbb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.12s;
+}
+
+.mer-card__size:hover {
+  color: var(--black);
+}
+
+.mer-card__size.active {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* ── КНОПКА ДОБАВИТЬ ── */
+.mer-card__add {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--green);
+  color: var(--black);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.12s;
+}
+
+.mer-card__add:hover {
+  background: #aadf3e;
+}
+
+.mer-card__add:active {
+  transform: scale(0.9);
+}
+
+/* ── ЦЕНА ── */
+.mer-card__price {
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  font-weight: 500;
+  color: var(--black);
+}
+
+/* ── СКЕЛЕТОН ── */
+.mer-card--skeleton .shop-card__img-wrap {
+  background: #e4e4e4;
+}
+
+.mer-card--skeleton .shop-card__body {
+  gap: var(--space-8);
+}
+
+.skel {
+  background: linear-gradient(90deg, #e8e8e8 25%, #f2f2f2 50%, #e8e8e8 75%);
+  background-size: 200% 100%;
+  animation: skel-shine 1.4s infinite;
+  border-radius: 6px;
+}
+
+@keyframes skel-shine {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── КНОПКА «загрузить ещё» ── */
+.mer__loadmore-wrapper {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.mer__loadmore {
+  background: none;
+  border: none;
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  color: var(--blue);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.mer__loadmore:hover  { opacity: 0.65; }
+.mer__loadmore:disabled { opacity: 0.35; cursor: default; }
+
+/* ── ПУСТЫЕ СОСТОЯНИЯ ── */
+.mer__state-msg {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 64px 0;
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  color: #aaa;
+}
+/* ----- Блок ведущего (вертикально) ----- */
+.mer-card__leader {
+  margin-top: var(--space-12);    /* увеличил отступ сверху */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mer-card__leader-label {
+  font-family: var(--font-primary);
+  font-size: var(--dec);
+  color: #aaa;
+  text-transform: lowercase;
+}
+
+.mer-card__leader-name {
+  font-family: var(--font-primary);
+  font-size: var(--body);
+  font-weight: 500;
+  color: var(--black);
+}
+
+/* ----- День и время в строку (горизонтально) ----- */
+.mer-card__datetime {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: var(--space-16);    /* увеличен отступ сверху */
+  margin-bottom: var(--space-4);  /* небольшой отступ снизу */
+}
+
+.mer-card__weekday,
+.mer-card__time {
+  font-family: var(--font-primary);
+  font-size: 24px;
+  font-weight: 500;              /* обычная полужирность, не bold */
+  line-height: 1.2;
+  color: var(--black);           /* оба чёрные */
+}
+
+/* Время не выделяем жирным и не делаем синим */
+.mer-card__time {
+  font-weight: 500;              /* так же как и день */
+}
+
+/* Дополнительно увеличим расстояние внутри .mer-card__body */
+
+
+/* Адаптив для мобилок */
+@media (max-width: 756px) {
+  .mer-card__weekday,
+  .mer-card__time {
+    font-size: 18px;
+  }
+  .mer-card__datetime {
+    margin-top: var(--space-12);
+  }
+}
+/* ===================================================
+   АДАПТИВ
+   =================================================== */
+
+/* Планшет — 12 → 6 колонок, карточка span 3 = 2 в ряд */
+@media (max-width: 1156px) {
+  .mer-card {
+    grid-column: span 3;
+    border-radius: 20px;
+  }
+
+  .mer-card__body {
+    padding: var(--space-16) 12px 12px;
+  }
+
+  .mer-card__add {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .mer__loadmore-wrapper {
+    margin-top: var(--space-32);
+  }
+}
+
+/* Мобилка — 4 колонки, карточка span 2 = 2 в ряд */
+@media (max-width: 756px) {
+  .mer-card {
+    grid-column: span 2;
+    border-radius: 12px;
+  }
+
+  .mer-card__img-wrap {
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 8px 16px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  .mer-card__body {
+    padding: var(--space-8);
+    gap: var(--space-4);
+  }
+
+  .mer-card__add {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .mer__toolbar {
+    flex-wrap: wrap;
+    gap: var(--space-8);
+  }
+
+  .mer__search {
+    height: 44px;
+  }
+
+  .mer__btn-toolbar {
+    height: 44px;
+    padding: 0 16px;
+  }
+
+  .mer__loadmore-wrapper {
+    margin-top: var(--space-16);
+  }
+}

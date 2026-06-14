@@ -24,7 +24,7 @@ const SHOP_SUPABASE_KEY = window.vmesteSupabaseConfig.publishableKey;
 /* ── Настройки ── */
 const PAGE_SIZE     = 8;
 const ANIMATE_DELAY = 60; /* ms между карточками */
-const SHOP_SELECT_FIELDS = 'id,slug,name,material,price,sizes,image_url';
+const SHOP_SELECT_FIELDS = 'id,slug,name,material,price,sizes,image_url,category';
 const SHOP_REQUEST_TIMEOUT = 10000;
 
 /* ── Состояние ── */
@@ -35,6 +35,7 @@ const shopState = {
   loading:  false,
   hasMore:  true,
   products: [],
+  categories: [],
 };
 
 function shopCacheKey() {
@@ -71,7 +72,7 @@ function shopRenderInitial(items) {
 /* =====================================================
    SUPABASE FETCH
    ===================================================== */
-async function shopFetch({ page, search, ascending }) {
+async function shopFetch({ page, search, ascending, categories }) {
   const offset = page * PAGE_SIZE;
   const order  = `name.${ascending ? 'asc' : 'desc'}`;
 
@@ -83,6 +84,11 @@ async function shopFetch({ page, search, ascending }) {
 
   if (search.trim()) {
     url += `&name=ilike.*${encodeURIComponent(search.trim())}*`;
+  }
+
+  if (categories && categories.length > 0) {
+    const catFilter = categories.map(c => `"${c}"`).join(',');
+    url += `&category=in.(${catFilter})`;
   }
 
   const res = await (window.vmesteFetchWithTimeout || fetch)(url, {
@@ -212,6 +218,7 @@ async function shopLoad(reset = false) {
       page:      reset ? 0 : shopState.page,
       search:    shopState.search,
       ascending: shopState.sortAsc,
+      categories: shopState.categories,
     });
 
     /* убрать скелетоны */
@@ -266,11 +273,33 @@ document.getElementById('shopSearch')?.addEventListener('input', e => {
   shopSearchTimer  = setTimeout(() => shopLoad(true), 350);
 });
 
-/* Сортировка */
-document.getElementById('shopSortBtn')?.addEventListener('click', () => {
-  shopState.sortAsc = !shopState.sortAsc;
-  shopLoad(true);
-});
+/* Сортировка — кастомный dropdown */
+const shopSortWrap = document.getElementById('shopSortWrap');
+const shopSortTrigger = document.getElementById('shopSortTrigger');
+const shopSortDropdown = document.getElementById('shopSortDropdown');
+const shopSortHidden = document.getElementById('shopSortSelect');
+
+if (shopSortWrap && shopSortTrigger && shopSortDropdown) {
+  shopSortTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    shopSortWrap.classList.toggle('open');
+  });
+
+  shopSortDropdown.addEventListener('click', (e) => {
+    const option = e.target.closest('.mer__custom-select-option');
+    if (!option) return;
+    const value = option.dataset.value;
+    shopSortHidden.value = value;
+    shopSortTrigger.textContent = option.textContent;
+    shopSortDropdown.querySelectorAll('.mer__custom-select-option').forEach(o => o.classList.remove('selected'));
+    option.classList.add('selected');
+    shopSortWrap.classList.remove('open');
+    shopState.sortAsc = value !== 'price-desc';
+    shopLoad(true);
+  });
+
+  document.addEventListener('click', () => shopSortWrap.classList.remove('open'));
+}
 
 /* Загрузить ещё */
 document.getElementById('shopLoadMore')?.addEventListener('click', () => {
@@ -278,9 +307,48 @@ document.getElementById('shopLoadMore')?.addEventListener('click', () => {
 });
 
 /* Фильтры */
-document.getElementById('shopFiltersBtn')?.addEventListener('click', () => {
-  /* TODO: откройте свою панель фильтров */
-  console.log('[shop] фильтры');
+const shopFilterPopup = document.getElementById('shopFilterPopup');
+const shopFiltersBtn = document.getElementById('shopFiltersBtn');
+
+shopFiltersBtn?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  shopFilterPopup?.classList.toggle('active');
+});
+
+document.getElementById('shopFilterClose')?.addEventListener('click', () => {
+  shopFilterPopup?.classList.remove('active');
+});
+
+// Обработка чипсов фильтров
+shopFilterPopup?.addEventListener('click', (e) => {
+  const chip = e.target.closest('.mer__chip');
+  if (!chip) return;
+  chip.classList.toggle('active');
+});
+
+document.getElementById('shopFilterApply')?.addEventListener('click', () => {
+  const selectedCategories = [];
+  shopFilterPopup?.querySelectorAll('.mer__chip[data-group="category"].active').forEach(c => {
+    selectedCategories.push(c.dataset.value);
+  });
+  shopState.categories = selectedCategories;
+
+  shopFilterPopup?.classList.remove('active');
+  shopLoad(true);
+});
+
+document.getElementById('shopFilterReset')?.addEventListener('click', () => {
+  shopFilterPopup?.querySelectorAll('.mer__chip').forEach(c => c.classList.remove('active'));
+  shopState.categories = [];
+  shopFilterPopup?.classList.remove('active');
+  shopLoad(true);
+});
+
+// Закрытие попапа при клике вне
+document.addEventListener('click', (e) => {
+  if (shopFilterPopup?.classList.contains('active') && !shopFilterPopup.contains(e.target) && e.target !== shopFiltersBtn) {
+    shopFilterPopup.classList.remove('active');
+  }
 });
 
 /* Переход на страницу товара по клику на свободную область карточки */

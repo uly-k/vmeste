@@ -22,10 +22,12 @@
   <link rel="stylesheet" href="styles/layout/footer.css">
 
   <link rel="stylesheet" href="styles/components/buttons.css">
+  <link rel="stylesheet" href="styles/components/filters.css">
   <link rel="stylesheet" href="styles/components/cards.css">
   <link rel="stylesheet" href="styles/components/cards-shop.css">
   <link rel="stylesheet" href="styles/pages/shop.css">
   <link rel="stylesheet" href="styles/pages/cart.css">
+  <link rel="stylesheet" href="styles/base/dark-theme.css">
 
   <title>(в)месте магазин</title>
 </head>
@@ -95,10 +97,10 @@
   </div>
   <main id="shop">
 
-    <div  class="layout"> <h3>магазин</h3> </div>
+    <div id="zn1" class="layout"> <h3>магазин</h3> </div>
 
     
-    <div  class="layout layout--padding">
+    <div  class="layout">
 
       <!-- тулбар -->
       <div class="shop__toolbar">
@@ -120,19 +122,48 @@
           </span>
         </div>
 
-        <button class="shop__btn-toolbar" id="shopFiltersBtn">
-          фильтры
-        </button>
+        <!-- Кнопка фильтров — попап вставляется JS-ом сразу после неё -->
+        <div class="shop__filters-wrap">
+          <button class="shop__btn-toolbar" id="shopFiltersBtn">
+            фильтры
+          </button>
+          <div class="mer__filter-popup" id="shopFilterPopup">
+            <div class="mer__filter-popup-head">
+              <span>фильтры</span>
+              <button class="mer__filter-popup-close" id="shopFilterClose">×</button>
+            </div>
+            <div class="mer__filter-group">
+              <span class="mer__filter-group-label">категория</span>
+              <div class="mer__chips">
+                <button class="mer__chip" data-group="category" data-value="одежда">одежда</button>
+                <button class="mer__chip" data-group="category" data-value="канцелярия">канцелярия</button>
+                <button class="mer__chip" data-group="category" data-value="аксессуары">аксессуары</button>
+                <button class="mer__chip" data-group="category" data-value="игрушки">игрушки</button>
+              </div>
+            </div>
+            <div class="mer__filter-popup-footer">
+              <button class="mer__filter-reset" id="shopFilterReset">сбросить</button>
+              <button class="mer__filter-apply" id="shopFilterApply">показать</button>
+            </div>
+          </div>
+        </div>
 
-        <button class="shop__btn-toolbar shop__btn-sort" id="shopSortBtn"
-                title="сортировка">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1.8">
-            <path d="M8 6l4-4 4 4M8 18l4 4 4-4M3 12h18"/>
-          </svg>
-        </button>
+        <!-- Сортировка — кастомный dropdown -->
+        <div class="mer__custom-select" id="shopSortWrap">
+          <button class="mer__custom-select-trigger" id="shopSortTrigger">по умолчанию</button>
+          <div class="mer__custom-select-dropdown" id="shopSortDropdown">
+            <button class="mer__custom-select-option selected" data-value="default">по умолчанию</button>
+            <button class="mer__custom-select-option" data-value="price-asc">сначала дешевле</button>
+            <button class="mer__custom-select-option" data-value="price-desc">сначала дороже</button>
+            <button class="mer__custom-select-option" data-value="name-asc">по алфавиту</button>
+          </div>
+          <input type="hidden" id="shopSortSelect" value="default">
+        </div>
 
       </div>
+
+      <!-- Строка активных фильтров -->
+      <div class="mer__active-filters" id="shopActiveFilters" hidden></div>
 
       <!-- грид карточек -->
       <div class="shop__grid" id="shopGrid"></div>
@@ -279,5 +310,7 @@
   <script src="js/supabase-config.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/shop.js"></script>
+  <script src="js/shop-filters.js"></script>
+  <script src="js/theme.js"></script>
 </body>
 </html>

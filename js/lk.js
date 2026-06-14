@@ -114,6 +114,11 @@ class PersonalCabinet {
       return;
     }
 
+    // Очищаем кеш заказов чтобы загрузить свежие данные
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('vmeste_cache_v1:shop:') || k.startsWith('vmeste_cache_v1:lk:'))
+      .forEach(k => localStorage.removeItem(k));
+
     await Promise.all([
       this.loadProfile(),
       this.loadOrders(),
@@ -174,24 +179,33 @@ class PersonalCabinet {
   async loadOrders() {
     const uid = this.session.user?.id;
     if (!uid) return;
-    try {
-      /*
-        Делаем JOIN через PostgREST:
-        orders → order_items → products
-        Итого получаем плоский список с нужными полями
-      */
-      const rows = await lkFetch(
-        `orders?user_id=eq.${uid}`
-        + `&select=id,status,created_at,`
-        + `order_items(id,quantity,size,products(id,name,image_url,product_type,base_price))`
-        + `&order=created_at.desc`,
-        this.session.access_token
-      );
 
-      /*
-        Разворачиваем заказы в плоский список карточек:
-        один order_item = одна карточка
-      */
+    const grid = this.grid;
+    if (grid) grid.innerHTML = '<p class="lk-state-msg">загрузка...</p>';
+
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('vmeste_cache_v1:'))
+      .forEach(k => localStorage.removeItem(k));
+
+    try {
+      const client = window.vmesteSupabase;
+
+      const [ordersResult, eventsResult] = await Promise.all([
+        client.from('orders')
+          .select('id,status,created_at,order_items(id,quantity,size,products(id,name,image_url,product_type,base_price))')
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false })
+          .limit(50),
+        client.from('event_registrations')
+          .select('*')
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false })
+          .limit(50),
+      ]);
+
+      const rows = ordersResult.data || [];
+      const eventRows = eventsResult.data || [];
+
       this.orders = rows.flatMap(order =>
         (order.order_items || []).map(item => ({
           orderId:    order.id,
@@ -202,15 +216,33 @@ class PersonalCabinet {
           size:       item.size,
           product:    item.products,
           isPast:     ['completed', 'cancelled'].includes(order.status),
+          type:       'product',
         }))
       );
+
+      const eventCards = eventRows.map(ev => ({
+        orderId:    ev.id,
+        orderStatus: ev.status,
+        createdAt:  ev.created_at,
+        itemId:     ev.id,
+        quantity:   1,
+        size:       ev.event_date && ev.event_time ? `${ev.event_date}, ${ev.event_time}` : ev.event_date,
+        product:    { name: ev.event_name, base_price: ev.event_price, image_url: ev.event_image || '' },
+        isPast:     ev.status === 'completed' || ev.status === 'cancelled',
+        type:       'event',
+        eventId:    ev.event_id,
+        eventName:  ev.event_name,
+      }));
+
+      this.orders = [...this.orders, ...eventCards].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } catch (e) {
-      console.error('[lk] orders:', e);
+      console.error('[lk] loadOrders:', e);
     }
   }
 
   /* ─── ФИЛЬТРАЦИЯ ─── */
   getFiltered() {
+    console.log('[lk] getFiltered: total', this.orders.length, 'filter:', this.filter);
     if (this.filter === 'past') return this.orders.filter(o => o.isPast);
     return this.orders;
   }
@@ -219,13 +251,17 @@ class PersonalCabinet {
   render() {
     const filtered = this.getFiltered();
     const slice    = filtered.slice(0, this.visible);
+    console.log('[lk] render:', filtered.length, 'items,', slice.length, 'visible');
 
     this.grid.innerHTML = '';
 
     if (slice.length === 0) {
       this.grid.innerHTML = '<p class="lk-state-msg">пока здесь ничего нет</p>';
     } else {
-      slice.forEach(item => this.grid.appendChild(this.createCard(item)));
+      slice.forEach(item => {
+        console.log('[lk] card:', item.type, item.product?.name || item.eventName);
+        this.grid.appendChild(this.createCard(item));
+      });
     }
 
     if (this.loadmoreWrap) {
@@ -237,6 +273,7 @@ class PersonalCabinet {
   createCard(item) {
     const p      = item.product || {};
     const status = item.orderStatus;
+    const isEvent = item.type === 'event';
 
     const statusMap = {
       pending:    { text: 'в обработке', disabled: true },
@@ -244,19 +281,28 @@ class PersonalCabinet {
       ready:      { text: 'показать QR', disabled: false },
       completed:  { text: 'получен',     disabled: true },
       cancelled:  { text: 'отменён',     disabled: true },
+      confirmed:  { text: 'подтверждено', disabled: true },
     };
     const s = statusMap[status] || { text: status, disabled: true };
 
-    const metaLines = [
-      item.size     ? `Размер: ${item.size}`        : null,
-      item.quantity ? `Кол-во: ${item.quantity}`    : null,
-      p.base_price  ? `${Number(p.base_price).toLocaleString('ru-RU')} ₽` : null,
-    ].filter(Boolean).join(' · ');
+    const metaLines = isEvent
+      ? [
+          item.size     ? `${item.size}`        : null,
+          p.base_price  ? `${Number(p.base_price).toLocaleString('ru-RU')} ₽` : null,
+        ].filter(Boolean).join(' · ')
+      : [
+          item.size     ? `Размер: ${item.size}`        : null,
+          item.quantity ? `Кол-во: ${item.quantity}`    : null,
+          p.base_price  ? `${Number(p.base_price).toLocaleString('ru-RU')} ₽` : null,
+        ].filter(Boolean).join(' · ');
 
     const card = document.createElement('div');
     card.className = `order-card${item.isPast ? ' past-event' : ''}`;
     card.dataset.orderId = item.orderId;
-    const imageUrl = window.vmesteProductImageUrl?.(p.image_url, 'order') || p.image_url || 'media/prof.png';
+    const imageUrl = (p.image_url && window.vmesteProductImageUrl?.(p.image_url, 'order'))
+      || (isEvent ? window.vmesteEventImageUrl?.(p.image_url, item.eventId) : '')
+      || p.image_url
+      || 'media/prof.png';
     const imageOriginalAttr = p.image_url
       ? ` data-vmeste-original-image="${String(p.image_url).replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"`
       : '';
@@ -264,7 +310,7 @@ class PersonalCabinet {
     card.innerHTML = `
       <img class="order-card__img"
            src="${String(imageUrl).replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"
-           alt="${String(p.name || 'товар').replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"
+           alt="${String(p.name || (isEvent ? 'мероприятие' : 'товар')).replaceAll('&', '&amp;').replaceAll('"', '&quot;')}"
            loading="lazy" decoding="async"${imageOriginalAttr} />
       <div class="order-card__content">
         <div>
@@ -272,25 +318,26 @@ class PersonalCabinet {
           <div class="order-card__meta"><p>${metaLines}</p></div>
         </div>
         <div class="order-card__actions">
-          ${!item.isPast ? `
+          ${!item.isPast && !isEvent ? `
             <button class="btn btn--secondary${s.disabled ? ' btn--disabled' : ''}"
                     ${s.disabled ? 'disabled' : ''}
                     data-action="main">${s.text}</button>
             <button class="cancel-link" data-action="cancel">отменить заказ</button>
           ` : ''}
+          ${isEvent && !item.isPast ? `
+            <span class="order-card__status">${s.text}</span>
+          ` : ''}
         </div>
       </div>
     `;
 
-    /* QR-кнопка */
-    if (!s.disabled && !item.isPast) {
+    if (!s.disabled && !item.isPast && !isEvent) {
       card.querySelector('[data-action="main"]')?.addEventListener('click', () => {
         this.showQR(item);
       });
     }
 
-    /* Отмена */
-    if (!item.isPast) {
+    if (!item.isPast && !isEvent) {
       card.querySelector('[data-action="cancel"]')?.addEventListener('click', () => {
         this.cancelOrder(item.orderId, card);
       });

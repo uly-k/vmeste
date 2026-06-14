@@ -292,20 +292,7 @@
   }
 
 
-  @media (max-width: 756px) {
-  .abonement-stack {
-    padding: 100px 12px;
-    margin: -100px -12px;
-    gap: 12px;
-  }
 
-  .abonement-item {
-    width: 100%;
-    height: auto;
-    min-height: 200px;
-    padding: 20px;
-  }
-}
 }
 
 

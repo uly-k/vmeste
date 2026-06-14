@@ -1,0 +1,259 @@
+/* ============================================
+   РЕЖИМ ПОНИЖЕННОЙ СЕНСОРНОЙ НАГРУЗКИ
+   Приглушённые, но сочные оттенки салатового и голубого
+   ============================================ */
+
+.low-sensory {
+  /* Основные цвета – снижена насыщенность, но сохранён характер */
+  --black: #2C3E50;              /* мягкий тёмно-серый вместо чёрного */
+  --white: #F8F9FA;              /* очень светлый серый вместо белого */
+  --blue: #5A8FBF;               /* приглушённый голубовато-синий (был #0077FF) */
+  --dark-blue: #4A7A9E;          /* чуть темнее для ховера */
+  --light-blue: #E2E8F0;         /* светлый серо-голубой для фонов */
+  --green: #A4D46A;              /* приглушённый, но сочный салатовый (был #BEF655) */
+
+  /* Градиент: зелёный → белый (цвета приглушены) */
+  --gradient-main: linear-gradient(to top, var(--green) 0%, var(--white) 60%);
+
+  /* Дополнительные переменные */
+  --card-bg: #FFFFFF;
+  --text-muted: #6C757D;
+  --hover-overlay: rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* --- 1. ТЕКСТ И ССЫЛКИ (глобально) --- */
+.low-sensory body,
+.low-sensory h1, .low-sensory h2, .low-sensory h3,
+.low-sensory p, .low-sensory span, .low-sensory li,
+.low-sensory .zone-label,
+.low-sensory .card p, .low-sensory .card h2,
+.low-sensory .abonement-item p, .low-sensory .abonement-item h2,
+.low-sensory .rule-card p, .low-sensory .rule-card h2,
+.low-sensory .footer__card p, .low-sensory .footer__card h2,
+.low-sensory .footer__links p {
+  color: var(--black) !important;
+}
+
+.low-sensory a:not(.btn):not(.low-sensory-fixed-btn) {
+  color: var(--blue) !important;
+}
+.low-sensory a:hover {
+  color: var(--dark-blue) !important;
+}
+
+/* --- 2. ФОНЫ (все контейнеры) --- */
+.low-sensory body,
+.low-sensory .hero,
+.low-sensory .faq,
+.low-sensory .about,
+.low-sensory .features,
+.low-sensory .location,
+.low-sensory .donate,
+.low-sensory #shop, .low-sensory #afisha,
+.low-sensory .mobile-menu,
+.low-sensory .modal__container,
+.low-sensory .shop-card,
+.low-sensory .mer-card,
+.low-sensory .account-order,
+.low-sensory .cart-item,
+.low-sensory .cart-summary,
+.low-sensory .card,
+.low-sensory .abonement-item,
+.low-sensory .rule-card {
+  background-color: var(--white) !important;
+}
+
+/* --- 3. ЦВЕТНЫЕ КАРТОЧКИ (все: карточки, абонементы, футер) --- */
+/* Синие карточки – светлый голубой фон */
+.low-sensory .card--blue,
+.low-sensory .abonement-item--blue,
+.low-sensory .rule-card--blue,
+.low-sensory .footer__card--blue {
+  background-color: #D4E4F5 !important;
+}
+/* Зелёные карточки – светлый салатовый фон */
+.low-sensory .card--green,
+.low-sensory .abonement-item--green,
+.low-sensory .rule-card--green,
+.low-sensory .footer__card--green {
+  background-color: #E8F5E0 !important;
+}
+.low-sensory .card--lightblue,
+.low-sensory .abonement-item--lightblue,
+.low-sensory .rule-card--lightblue {
+  background-color: var(--light-blue) !important;
+}
+
+/* --- 4. ФУТЕР (специфика) --- */
+.low-sensory #fbackf {
+  background-color: #E9ECEF !important;
+}
+.low-sensory #sback {
+  background-color: var(--white) !important;
+}
+.low-sensory .footer__links a {
+  color: var(--blue) !important;
+}
+.low-sensory .footer__icons .icon img {
+  filter: brightness(0.8) contrast(0.9) !important;
+}
+
+/* --- 5. КНОПКИ И ЭЛЕМЕНТЫ УПРАВЛЕНИЯ --- */
+.low-sensory .btn--primary {
+  background-color: var(--blue) !important;
+  color: var(--white) !important;
+}
+.low-sensory .btn--primary:hover {
+  background-color: var(--dark-blue) !important;
+}
+.low-sensory .btn--secondary,
+.low-sensory .btn--white,
+.low-sensory .shop__btn-toolbar,
+.low-sensory .mer__btn-toolbar {
+  background-color: #E9ECEF !important;
+  color: var(--blue) !important;
+  border: 1px solid #CED4DA !important;
+}
+.low-sensory .shop__search,
+.low-sensory .mer__search,
+.low-sensory .modal__input {
+  background-color: #F1F3F5 !important;
+  border-color: #CED4DA !important;
+  color: var(--black) !important;
+}
+
+/* --- 6. СЛАЙДЕР (пожертвования) --- */
+.low-sensory .track-fill {
+  background-color: var(--green) !important;
+}
+.low-sensory .track-btn.green {
+  background-color: var(--green) !important;
+  color: var(--black) !important;
+}
+.low-sensory .track-btn {
+  background-color: #ADB5BD !important;
+}
+
+/* --- 7. ПУНКТИРНЫЕ ЛИНИИ --- */
+.low-sensory .header::after,
+.low-sensory .features::after,
+.low-sensory .location::after,
+.low-sensory .donate::after,
+.low-sensory .dashed-line-1,
+.low-sensory .dashed-line-2,
+.low-sensory .dashed-line-3,
+.low-sensory .dashed-line-4 {
+  background: repeating-linear-gradient(
+    to right,
+    var(--blue) 0px,
+    var(--blue) 9px,
+    transparent 9px,
+    transparent 18px
+  ) !important;
+  opacity: 0.5;
+}
+
+/* --- 8. SVG И ИКОНКИ --- */
+.low-sensory .logo img,
+.low-sensory .nav-cart__icon svg rect,
+.low-sensory .cart-icon__icon svg path:first-child,
+.low-sensory .footer__buttonup svg path {
+  fill: var(--black) !important;
+  opacity: 0.8;
+}
+/* Слегка приглушаем изображения, но не инвертируем */
+.low-sensory img {
+  filter: brightness(0.98) contrast(0.95);
+}
+/* Карта пространства (SVG) */
+.low-sensory .zone {
+  stroke: #8C9AAB !important;
+}
+.low-sensory .zone-label {
+  fill: var(--black) !important;
+}
+
+/* --- 9. СКРОЛЛБАР --- */
+.low-sensory ::-webkit-scrollbar-thumb {
+  background: #ADB5BD !important;
+}
+
+/* --- 10. ФИКСИРОВАННАЯ КНОПКА ПЕРЕКЛЮЧЕНИЯ --- */
+.low-sensory-fixed-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 60px;
+  padding: 12px 20px;
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(4px);
+}
+.low-sensory-fixed-btn:hover {
+  transform: scale(1.02);
+  background-color: var(--dark-blue);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+.low-sensory .low-sensory-fixed-btn {
+  background-color: var(--blue);
+  opacity: 0.9;
+}
+@media (max-width: 756px) {
+  .low-sensory-fixed-btn {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+/* Приглушаем насыщенность всех изображений и иконок в футере */
+.low-sensory img,
+.low-sensory .footer__icons .icon img {
+  filter: saturate(0.55) brightness(0.98);
+}
+
+
+/* Специально для карточки мероприятия (event-detail) */
+.low-sensory .event-hero__date-card {
+  background:  #E8F5E0 !important;
+}
+
+/* --- 11. КНОПКА «НАВЕРХ» В ФУТЕРЕ (спокойный режим) --- */
+.low-sensory .footer__buttonup {
+  background-color: #adb0b6 !important;  /* приглушённый серый вместо чёрного */
+}
+.low-sensory .footer__buttonup svg path {
+  fill: #2C3E50 !important;  /* стрелка становится тёмно-серой (в тон тексту) */
+}
+.low-sensory .footer__buttonup:hover {
+  background-color: #5A7A9A !important;  /* при наведении — приглушённый синий */
+}
+
+/* --- 12. СЧЁТЧИК КОРЗИНЫ (синий фон с цифрой) --- */
+.low-sensory .nav-cart__icon svg rect {
+  fill: #91a8c0 !important;  /* фон счётчика — приглушённый синий (вместо яркого #0178FF) */
+}
+.low-sensory .nav-cart__count {
+  color: #2C3E50 !important;  /* цифра становится тёмно-серой (мягче, чем белый) */
+}
+
+/* Мобильная версия корзины */
+.low-sensory .cart-icon__icon svg path:first-child {
+  fill: #91a8c0 !important;
+}
+.low-sensory .cart-icon__icon .nav-cart__count {
+  color: #2C3E50 !important;
+}

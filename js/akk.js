@@ -1,7 +1,7 @@
 class AbonementStack {
-  constructor(containerSelector) {
-    this.container = document.querySelector(containerSelector);
-    this.wrapper = this.container.parentElement; // обёртка для градиента
+  constructor(container) {               // теперь принимает DOM-элемент
+    this.container = container;
+    this.wrapper = this.container.parentElement;
     this.items = [...this.container.querySelectorAll('.abonement-item')];
     this.currentActive = 0;
     this.hasBeenActivated = false;
@@ -61,7 +61,6 @@ class AbonementStack {
         this.activateCard(index);
       };
       
-      // Удаляем старые обработчики перед добавлением новых
       item.removeEventListener('click', handler);
       item.removeEventListener('mouseenter', handler);
       
@@ -78,19 +77,15 @@ class AbonementStack {
     const containerWidth = this.container.offsetWidth;
     const itemsCount = this.items.length;
     
-    // Считаем максимальную ширину стека
     let cardWidth = settings.cardWidth;
     let gap = settings.gap;
     let stackWidth = cardWidth + (gap * (itemsCount - 1));
     
-    // Если стек не влезает — уменьшаем gap
     if (stackWidth > containerWidth) {
-      // Сначала пробуем ужать gap до минимума в 20px
       const minGap = 20;
       gap = Math.max(minGap, (containerWidth - cardWidth) / (itemsCount - 1));
       stackWidth = cardWidth + (gap * (itemsCount - 1));
       
-      // Если даже с минимальным gap не влезает — уменьшаем карточки
       if (stackWidth > containerWidth) {
         cardWidth = (containerWidth - (minGap * (itemsCount - 1)));
         gap = minGap;
@@ -174,12 +169,15 @@ class AbonementStack {
   
   enableMobileMode() {
     this.items.forEach(item => {
+      // Сбрасываем все inline-стили, которые могли быть установлены для десктопа
       item.style.left = '';
+      item.style.top = '';
       item.style.width = '';
       item.style.height = '';
       item.style.aspectRatio = '';
       item.style.zIndex = '';
       item.style.transform = '';
+      item.style.position = '';        // дополнительно сбрасываем position, если был
       item.classList.remove('active-card');
       
       const title = item.querySelector('.abonement-item__title');
@@ -190,6 +188,8 @@ class AbonementStack {
   }
 }
 
+// Инициализация ВСЕХ стеков на странице
 document.addEventListener('DOMContentLoaded', () => {
-  new AbonementStack('.abonement-stack');
+  const stacks = document.querySelectorAll('.abonement-stack');
+  stacks.forEach(stack => new AbonementStack(stack));
 });
