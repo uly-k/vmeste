@@ -112,34 +112,14 @@ window.vmesteProductImageUrl = function(storagePath, options) {
     return raw ? window.vmesteProxyUrl(raw, options) : '';
   }
 
-  const preset = vmesteNormalizeProductImageOptions(options);
   const originalUrl = window.vmesteProductImageOriginalUrl(extractedPath);
-
-  const params = new URLSearchParams();
-  params.set('url', originalUrl);
-  if (preset.width)  params.set('w', preset.width);
-  if (preset.height) params.set('h', preset.height);
-  if (preset.quality) params.set('q', preset.quality);
-  if (preset.fit)     params.set('fit', preset.fit);
-
-  return `https://wsrv.nl/?${params.toString()}`;
+  return window.vmesteProxyUrl(originalUrl, options);
 };
 
 window.vmesteProxyUrl = function(url, options) {
   if (!url) return '';
   if (!/^https?:\/\//i.test(url)) return url;
 
-  const source = typeof options === 'string'
-    ? { preset: options }
-    : (options || {});
-  const preset = VMESTE_PRODUCT_IMAGE_PRESETS[source.preset] || {};
-
-  const params = new URLSearchParams();
-  params.set('url', url);
-  if (preset.width)  params.set('w', preset.width);
-  if (preset.height) params.set('h', preset.height);
-  if (preset.quality) params.set('q', preset.quality);
-  if (preset.fit)     params.set('fit', preset.fit);
-
-  return `https://wsrv.nl/?${params.toString()}`;
+  const proxyBase = VMESTE_API_PROXY || 'https://corsproxy.io/?url=';
+  return proxyBase + encodeURIComponent(url);
 };
