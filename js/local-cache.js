@@ -35,7 +35,13 @@ function vmesteCachedUserId() {
     const authKey = Object.keys(localStorage)
       .find(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
     if (!authKey) return null;
-    return JSON.parse(localStorage.getItem(authKey))?.user?.id || null;
+    const data = JSON.parse(localStorage.getItem(authKey));
+    if (!data?.user?.id) return null;
+    if (data.expires_at && data.expires_at * 1000 < Date.now()) {
+      localStorage.removeItem(authKey);
+      return null;
+    }
+    return data.user.id;
   } catch {
     return null;
   }
