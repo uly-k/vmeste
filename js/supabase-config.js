@@ -1,8 +1,9 @@
 const VMESTE_SUPABASE_URL = 'https://mmbslfwzaxmxmaevbdse.supabase.co';
 const VMESTE_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_r364-y7dWbnYNBqeeAGRVQ_CwpD2cMw';
 const VMESTE_PRODUCT_IMAGE_BUCKET = 'product-images';
-const VMESTE_API_PROXY = '';
-const VMESTE_API_PROXY_FALLBACK = 'https://vmeste-supabase-proxy.joroslav121.workers.dev/?url=';
+const VMESTE_API_PROXY = 'https://vmeste-supabase-proxy.joroslav121.workers.dev/?url=';
+const VMESTE_API_PROXY_FALLBACK = 'https://corsproxy.io/?url=';
+const VMESTE_IMAGE_PROXY = 'https://wsrv.nl/?url=';
 
 const VMESTE_PRODUCT_IMAGE_PRESETS = Object.freeze({
   thumb:   { width: 200, height: 200, fit: 'cover', quality: 80 },
@@ -44,8 +45,9 @@ window.vmesteFetchJson = async function(url, options = {}, timeoutMs = 30000) {
 
 window.vmesteSupabaseFetch = async function(url, options = {}) {
   if (typeof url === 'string' && url.startsWith(VMESTE_SUPABASE_URL)) {
-    const proxy = VMESTE_API_PROXY_FALLBACK;
-    if (proxy) {
+    const proxies = [VMESTE_API_PROXY, VMESTE_API_PROXY_FALLBACK];
+    for (const proxy of proxies) {
+      if (!proxy) continue;
       try {
         const proxyUrl = proxy + encodeURIComponent(url);
         const response = await window.vmesteFetchWithTimeout(proxyUrl, { ...options }, 30000);
@@ -119,6 +121,5 @@ window.vmesteProxyUrl = function(url, options) {
   if (!url) return '';
   if (!/^https?:\/\//i.test(url)) return url;
 
-  const proxyBase = VMESTE_API_PROXY_FALLBACK || 'https://vmeste-supabase-proxy.joroslav121.workers.dev/?url=';
-  return proxyBase + encodeURIComponent(url);
+  return VMESTE_IMAGE_PROXY + encodeURIComponent(url);
 };
